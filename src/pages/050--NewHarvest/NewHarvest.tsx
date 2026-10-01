@@ -1,9 +1,9 @@
-import React from 'react'
+
 
 const NewHarvest = () => {
   return (
     <div>
-      
+      <p>nueva Cosecha</p>
     </div>
   )
 }
