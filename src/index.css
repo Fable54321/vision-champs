@@ -1,0 +1,367 @@
+@import "tailwindcss";
+
+@keyframes draft-created {
+  0% { opacity: 0; transform: translateY(-14px) scale(.96); }
+  45% { opacity: 1; transform: translateY(0) scale(1.035); box-shadow: 0 0 0 6px rgb(75 115 18 / .18); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(75 115 18 / 0); }
+}
+
+@keyframes draft-editor-opened {
+  0%, 100% { box-shadow: 0 1px 3px rgb(0 0 0 / .1); }
+  35% { box-shadow: 0 0 0 5px rgb(75 115 18 / .2), 0 15px 35px rgb(0 0 0 / .12); }
+}
+
+.draft-created {
+  animation: draft-created 700ms ease-out;
+}
+
+.draft-editor-opened {
+  animation: draft-editor-opened 1100ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draft-created,
+  .draft-editor-opened {
+    animation: none;
+  }
+}
+
+:root {
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Merriweather', serif;
+  --font-poppins: 'Poppins', sans-serif;
+}
+
+@theme {
+  --color-primary: #96c61c;
+  --color-secondary: #4b7312;
+  --color-light-blue: #f7fcfd;
+  --color-light-blue-hover: hsl(190, 60%, 92%);
+  --color-deepgreen: #263f08;
+  --color-tertiary: #F6F9F3;
+  --color-orange-dark: #ff5714;
+  --color-orange-light: rgb(from var(--color-orange-dark) r g b / 0.07);
+  --font-primary: var(--font-primary);
+  --font-secondary: var(--font-secondary);
+  --font-poppins: var(--font-poppins);
+  --color-primary-light:  hsl(77, 75%, 73%);
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+  
+}
+
+
+
+button:disabled {
+  cursor: not-allowed !important;
+}
+
+.custom-input {
+  padding-left: 4px;
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--color-secondary);
+  border-radius: 0.125rem;
+  /* rounded-sm */
+}
+
+
+
+.custom-input:focus {
+  outline-width: 2px;
+  outline-color: var(--color-primary);
+}
+
+
+
+
+.button-generic {
+  background-color: #4b7312;
+
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  direction: ltr;
+  font-family: 'Merriweather', sans-serif;
+
+  font-weight: bold;
+  letter-spacing: -.022em;
+  line-height: 1.47059;
+  box-shadow: -2px 4px 6px hsl(0deg 0% 0% / 0.2);
+  overflow: visible;
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+}
+
+.button-generic-red {
+  background-color: hsl(0, 100%, 45%);
+
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  direction: ltr;
+  font-family: "Merriweather", sans-serif;
+
+  font-weight: bold;
+  letter-spacing: -.022em;
+  line-height: 1.47059;
+  box-shadow: -2px 4px 6px hsl(0deg 0% 0% / 0.2);
+  overflow: visible;
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+}
+
+.button-generic:disabled {
+  cursor: default;
+  opacity: .3;
+}
+
+.button-generic:hover {
+  background-color: hsl(85, 73%, 36%);
+  text-decoration: none;
+}
+
+.button-generic:active {
+  background-image: linear-gradient(hsl(85, 73%, 56%), hsl(85, 73%, 26%));
+  transform: scaleX(.98) scaleY(.98);
+  outline: none;
+}
+
+.button-generic:focus {
+
+  outline: none;
+}
+
+.button-generic-red:hover {
+  background-color: hsl(0, 100%, 55%);
+  text-decoration: none;
+}
+
+
+
+
+
+
+.link-box {
+  position: relative;
+  background-color:  white; 
+  overflow: hidden;
+  
+  border-radius: 0.5rem; 
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  width: 140px;
+  height: 140px;
+  padding: 10px;
+  z-index: 1;
+  letter-spacing: -0.022em;
+  line-height: 1.47059;
+  box-shadow: -2px 4px 6px hsl(0 0% 0% / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  touch-action: manipulation;
+  direction: ltr;
+  transition: all 0.5s ease-in-out;
+}
+
+
+
+.link-box .flower {
+  display:none;
+}
+
+.flower {
+  animation: appear 1s ease-in-out forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.2;
+  }
+}
+
+.slide-down {
+  animation: slide-down 0.75s ease-in-out forwards;
+  
+  transform: translateY(-130%);
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-130%);
+  
+  }
+  to {
+    transform: translateY(0);
+    
+  }
+}
+
+.overlay-appear {
+  animation: overlay-appear 0.75s ease-in-out forwards;
+  
+  
+}
+
+@keyframes overlay-appear {
+  from {
+    opacity: 0;
+    scale: 50%;
+  }
+  to {
+    opacity: 1;
+    scale: 100%;
+  }
+}
+
+
+
+.link-box:hover {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom right, #96c61c, #4b7312);
+
+  border-radius: 0.5rem; /* rounded-sm */
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  width: 380px;
+
+  letter-spacing: -0.022em;
+  line-height: 1.47059;
+  box-shadow: -2px 4px 6px hsl(0 0% 0% / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: start;
+ transition: width 0.5s ease-in-out;
+  
+  touch-action: manipulation;
+  direction: ltr;
+  
+}
+
+.link-box:hover .flower {
+  display: block;
+
+}
+
+
+.text-appear {
+  opacity: 0;
+  animation: text-appear 0.25s ease-in-out forwards;
+  animation-delay: 0.4s;
+  font-weight: light;
+  font-size: 2.5rem;
+  margin-left: 0px;
+  font-family: var(--font-poppins);
+}
+
+.gradientCss {
+  background: linear-gradient(
+    to right,
+    rgb(246 249 243 / 0) 0%,
+    rgb(246 249 243 / 0.08) 0.75%,
+    rgb(246 249 243 / 0.25) 1.5%,
+    rgb(246 249 243 / 0.55) 2.75%,
+    rgb(246 249 243 / 0.82) 4%,
+    rgb(246 249 243 / 1) 5%
+  );
+}
+
+
+
+
+@media (max-width: 758px) {
+  .link-box {
+    width: 95%;
+    height: fit-content;
+    padding: 0;
+    color: black;
+  }
+
+  .link-box img {
+    width: 60px;
+    height: 60px;
+  }
+
+  
+}
+
+
+@keyframes text-appear {
+  from {
+    opacity: 0;
+    margin-left: 0px;
+  }
+  to {
+    opacity: 1;
+    margin-left: 10px;
+  }
+}
+
+@keyframes selected-worker-pulse {
+  0%, 100% {
+    transform: scale(0.96);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes longer-pulse {
+  0%, 100% {
+    transform: scale(0.96);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.selected-worker-pulse {
+  position: relative;
+  z-index: 1;
+  animation: selected-worker-pulse 0.85s ease-in-out infinite;
+  outline: 3px solid rgb(163 230 53 / 0.75);
+  outline-offset: 2px;
+}
+
+.availability-bounce {
+  animation: longer-pulse 0.85s ease-in-out 7;
+  
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selected-worker-pulse {
+    animation: none;
+  }
+}
+
+
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  background-color: #F6F9F3;
+}
