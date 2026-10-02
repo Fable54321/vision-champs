@@ -5,6 +5,8 @@ import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './pages/000--Home/Home.tsx'
 import NewHarvest from './pages/050--NewHarvest/NewHarvest.tsx'
+import ProtectedRoute from './Components/ProtectedRoute.tsx'
+import { AuthProvider } from './Contexts/AuthContext.tsx'
 
 
 const router = createBrowserRouter([
@@ -14,11 +16,20 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: (
+          <ProtectedRoute>
+            <Home />
+         </ProtectedRoute>
+        )
+         ,
       },
       {
         path: "nueva-cosecha",
-        element: <NewHarvest />
+        element: (
+          <ProtectedRoute>
+            <NewHarvest />
+         </ProtectedRoute>
+        )
       }
     ]
   },
@@ -32,6 +43,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )
