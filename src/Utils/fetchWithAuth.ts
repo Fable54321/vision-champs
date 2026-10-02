@@ -4,7 +4,7 @@ let refreshPromise: Promise<boolean> | null = null;
 let sessionExpired = false;
 
 type FetchWithAuthOptions = Omit<RequestInit, "body"> & {
-  body?: BodyInit | Record<string, unknown> | unknown[] | null;
+  body?: BodyInit | object | null;
 };
 
 async function refreshOnce(): Promise<boolean> {
