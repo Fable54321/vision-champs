@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useHarvesting } from "../../Contexts/HarvestingContext";
+import { useForeignWorkers } from "../../Contexts/ForeignWorkersContext";
 
 const NewHarvest = () => {
   const {
@@ -8,6 +9,8 @@ const NewHarvest = () => {
     error,
     clearError,
   } = useHarvesting();
+
+    const { foreignWorkers } = useForeignWorkers();
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [subfield, setSubfield] = useState("");
@@ -63,6 +66,12 @@ const NewHarvest = () => {
     setSuccess(true);
     resetForm();
   };
+
+  useEffect(() => {
+    console.log(foreignWorkers);
+  },[foreignWorkers])
+
+
 
   return (
     <form
