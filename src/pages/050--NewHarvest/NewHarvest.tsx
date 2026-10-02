@@ -1,6 +1,7 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useHarvesting } from "../../Contexts/HarvestingContext";
 import { useForeignWorkers } from "../../Contexts/ForeignWorkersContext";
+import { formatNames } from "../../Utils/formatNames";
 
 const NewHarvest = () => {
   const {
@@ -67,9 +68,11 @@ const NewHarvest = () => {
     resetForm();
   };
 
-  useEffect(() => {
-    console.log(foreignWorkers);
-  },[foreignWorkers])
+const teamLeaders = useMemo(() => {
+  return foreignWorkers.filter((worker) => {
+    return worker.job_id_1 === 6 || worker.job_id_2 === 6 || worker.job_id_3 === 6
+  })
+} ,[foreignWorkers])
 
 
 
@@ -87,16 +90,23 @@ const NewHarvest = () => {
           Chef d'équipe
         </span>
 
-        <input
-          type="number"
-          min="1"
+        <select
+          
           value={teamLeaderUserId}
           onChange={(event) =>
             setTeamLeaderUserId(event.target.value)
           }
           required
-          className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        />
+          className="rounded-xl border relative border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          {teamLeaders.map((leader) => (
+            <option className="" value={leader.id} key={leader.id}>
+              {formatNames(leader.name,leader.surname)}
+              </option>
+          )
+            
+          )}
+        </select>
       </label>
 
       <label className="flex flex-col gap-2">
