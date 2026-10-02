@@ -13,37 +13,53 @@ import { fetchWithAuth } from "../Utils/fetchWithAuth";
 export interface HarvestingTracking {
   id: number;
 
-  reference_number: string;
-  planting_tracking_id: number;
-  harvest_date: string;
+  team_leader_user_id: number;
+  subfield: string;
 
-  harvested_quantity: string | null;
-  quantity_unit: string | null;
-  notes: string | null;
+  harvesting_date: string;
+  harvesting_time: string;
+
+  product: string;
+  sub_product: string | null;
+
+  amount_of_boxes: number;
+  box_type: string;
+
+  harvester: number;
 
   created_at: string;
 }
 
-
 export interface CreateHarvestingTrackingInput {
-  reference_number: string;
-  planting_tracking_id: number;
-  harvest_date: string;
+  team_leader_user_id: number;
+  subfield: string;
 
-  harvested_quantity?: number | string | null;
-  quantity_unit?: string | null;
-  notes?: string | null;
+  harvesting_date: string;
+  harvesting_time: string;
+
+  product: string;
+  sub_product?: string | null;
+
+  amount_of_boxes: number;
+  box_type: string;
+
+  harvester: number;
 }
 
-
 export interface UpdateHarvestingTrackingInput {
-  reference_number?: string;
-  planting_tracking_id?: number;
-  harvest_date?: string;
+  team_leader_user_id?: number;
+  subfield?: string;
 
-  harvested_quantity?: number | string | null;
-  quantity_unit?: string | null;
-  notes?: string | null;
+  harvesting_date?: string;
+  harvesting_time?: string;
+
+  product?: string;
+  sub_product?: string | null;
+
+  amount_of_boxes?: number;
+  box_type?: string;
+
+  harvester?: number;
 }
 
 
