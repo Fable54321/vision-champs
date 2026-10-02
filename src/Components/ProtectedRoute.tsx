@@ -9,7 +9,7 @@ const PORTAL_LOGIN_URL = "https://vegibec-portail.com/login"
 
   const { user, loading, setIsAuthorized } = useAuth();
 
-  const hasAccess = !!user?.appAccess?.some((app) => app.slug === "ventes");
+  const hasAccess = !!user?.appAccess?.some((app) => app.slug === "recolte");
 
   useEffect(() => {
     if (loading) return;
