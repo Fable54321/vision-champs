@@ -67,7 +67,7 @@ const NewHarvest = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-[min(95%,700px)] flex-col gap-5 rounded-2xl bg-white p-6 shadow-lg"
+      className="relative z-10 flex w-[min(95%,700px)] flex-col gap-5 rounded-2xl bg-white/50 p-6 shadow-lg"
     >
       <h2 className="text-2xl font-bold">
         Nouvelle récolte
@@ -102,7 +102,7 @@ const NewHarvest = () => {
             setSubfield(event.target.value)
           }
           required
-          className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
       </label>
 
@@ -119,7 +119,7 @@ const NewHarvest = () => {
               setHarvestingDate(event.target.value)
             }
             required
-            className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
 
@@ -135,7 +135,7 @@ const NewHarvest = () => {
               setHarvestingTime(event.target.value)
             }
             required
-            className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
       </div>
@@ -153,7 +153,7 @@ const NewHarvest = () => {
               setProduct(event.target.value)
             }
             required
-            className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
 
@@ -168,7 +168,7 @@ const NewHarvest = () => {
             onChange={(event) =>
               setSubProduct(event.target.value)
             }
-            className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
       </div>
@@ -187,7 +187,7 @@ const NewHarvest = () => {
               setAmountOfBoxes(event.target.value)
             }
             required
-            className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
 
@@ -203,7 +203,7 @@ const NewHarvest = () => {
               setBoxType(event.target.value)
             }
             required
-            className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
       </div>
@@ -221,7 +221,7 @@ const NewHarvest = () => {
           }
           required
           placeholder="Ex: Récolteuse 1"
-          className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
       </label>
 

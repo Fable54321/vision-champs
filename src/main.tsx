@@ -7,6 +7,8 @@ import Home from './pages/000--Home/Home.tsx'
 import NewHarvest from './pages/050--NewHarvest/NewHarvest.tsx'
 import ProtectedRoute from './Components/ProtectedRoute.tsx'
 import { AuthProvider } from './Contexts/AuthContext.tsx'
+import { HarvestingProvider } from './Contexts/HarvestingContext.tsx'
+import { ForeignWorkersProvider } from './Contexts/ForeignWorkersContext.tsx'
 
 
 const router = createBrowserRouter([
@@ -27,7 +29,11 @@ const router = createBrowserRouter([
         path: "nueva-cosecha",
         element: (
           <ProtectedRoute>
-            <NewHarvest />
+            <HarvestingProvider>
+            <ForeignWorkersProvider>
+                <NewHarvest />
+            </ForeignWorkersProvider>
+            </HarvestingProvider>
          </ProtectedRoute>
         )
       }

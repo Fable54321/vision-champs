@@ -11,19 +11,19 @@ function App() {
 
   <Outlet />
 
-  <div className="absolute bottom-0 right-0 w-40 h-36 overflow-hidden pointer-events-none">
+  <div className="fixed bottom-0 right-0 w-40 h-36 overflow-hidden pointer-events-none">
     <img
       src={flower}
       alt=""
-      className="absolute -bottom-3 -right-8 -rotate-35 w-40 opacity-30"
+      className="fixed -bottom-3 -right-8 -rotate-35 w-40 opacity-30"
     />
   </div>
 
-  <div className="absolute bottom-0 left-0 w-40 h-36 overflow-hidden pointer-events-none">
+  <div className="fixed bottom-0 left-0 w-40 h-36 overflow-hidden pointer-events-none">
     <img
       src={flower}
       alt=""
-      className="absolute -bottom-3 -left-8 rotate-35 w-40 opacity-30"
+      className="fixed -bottom-3 -left-8 rotate-35 w-40 opacity-30"
     />
   </div>
 </article>
