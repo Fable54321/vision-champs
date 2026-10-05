@@ -233,10 +233,18 @@ useEffect(() => {
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
-              {boxTypes.map((type) => (
-                <option>{type.box_type}</option>
-              )
-              )}
+              {[...boxTypes]
+                .sort((a, b) =>
+                  a.box_type.localeCompare(b.box_type, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  }),
+                )
+                .map((type) => (
+                  <option key={type.id} value={type.box_type}>
+                    {type.box_type}
+                  </option>
+                ))}
             </select>
         </label>
       </div>
