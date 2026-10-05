@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useHarvesting } from "../../Contexts/HarvestingContext";
 import { useForeignWorkers } from "../../Contexts/ForeignWorkersContext";
 import { formatNames } from "../../Utils/formatNames";
+import { useVegetables } from "../../Contexts/vegetablesContext";
 
 const NewHarvest = () => {
   const {
@@ -15,6 +16,8 @@ const NewHarvest = () => {
     fetchFields,
   } = useHarvesting();
 
+  const { fetchVegetables, vegetables } = useVegetables();
+
     const { foreignWorkers } = useForeignWorkers();
 
 
@@ -23,7 +26,8 @@ const NewHarvest = () => {
   const [subfield, setSubfield] = useState("");
   const [harvestingDate, setHarvestingDate] = useState("");
   const [harvestingTime, setHarvestingTime] = useState("");
-  const [product, setProduct] = useState("");
+  
+  const [vegetableId, setVegetableId] = useState<number | string>("")
   const [subProduct, setSubProduct] = useState("");
   const [amountOfBoxes, setAmountOfBoxes] = useState("");
   const [boxType, setBoxType] = useState("");
@@ -37,7 +41,7 @@ const NewHarvest = () => {
     setSubfield("");
     setHarvestingDate("");
     setHarvestingTime("");
-    setProduct("");
+    setVegetableId("");
     setSubProduct("");
     setAmountOfBoxes("");
     setBoxType("");
@@ -49,6 +53,10 @@ const NewHarvest = () => {
   ) => {
     event.preventDefault();
 
+    if(!vegetableId || typeof vegetableId === "string"){
+      throw new Error("La culture est obligatoire")
+    }
+
     clearError();
     setSuccess(false);
 
@@ -57,7 +65,7 @@ const NewHarvest = () => {
       subfield: subfield.trim(),
       harvesting_date: harvestingDate,
       harvesting_time: harvestingTime,
-      product: product.trim(),
+      vegetable_id: vegetableId,
       sub_product:
         subProduct.trim() === ""
           ? null
@@ -101,6 +109,18 @@ useEffect(() => {
 useEffect(() => {
   void fetchFields()
 }, [fetchFields])
+
+useEffect(() => {
+  void fetchVegetables()
+},[fetchVegetables])
+
+
+const filteredVegetables = useMemo(() => {
+  if(!vegetables) return;
+
+  return vegetables.filter((veg) => !veg.is_generic && veg.vegetable !== "AUCUNE")
+},[vegetables])
+
 
 
 
@@ -238,15 +258,24 @@ useEffect(() => {
             Producto
           </span>
 
-          <input
-            type="text"
-            value={product}
+          <select
+            
+            value={vegetableId}
             onChange={(event) =>
-              setProduct(event.target.value)
+              setVegetableId(event.target.value)
+
             }
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
+          >
+            <option>Seleccionar el cultivo</option>
+            {filteredVegetables?.map((veg) => (
+              <option
+               key={veg.id}
+               value={veg.id}
+               >{veg.vegetable}</option>
+            ))}
+            </select>
         </label>
 
            <label className="flex flex-col gap-2">
