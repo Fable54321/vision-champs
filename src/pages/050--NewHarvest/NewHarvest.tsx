@@ -30,6 +30,7 @@ const NewHarvest = () => {
   const [harvester, setHarvester] = useState("");
 
   const [success, setSuccess] = useState(false);
+  
 
   const resetForm = () => {
     setTeamLeaderUserId("");
@@ -80,6 +81,18 @@ const teamLeaders = useMemo(() => {
   })
 } ,[foreignWorkers])
 
+const selectedTeamLeaderName = useMemo(() => {
+  const selectedLeader = teamLeaders.find(
+    (leader) => String(leader.id) === teamLeaderUserId,
+  );
+
+  return selectedLeader
+    ? formatNames(selectedLeader.name, selectedLeader.surname)
+    : "Selecciona un jefe de equipo";
+}, [teamLeaderUserId, teamLeaders]);
+
+
+
 
 useEffect(() => {
   void fetchBoxTypes()
@@ -105,27 +118,51 @@ useEffect(() => {
           Jefe de equipo
         </span>
 
-        <select
-          
-          value={teamLeaderUserId}
-          onChange={(event) =>
-            setTeamLeaderUserId(event.target.value)
-          }
-          required
-          className="w-full rounded-xl border  border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        >
-          {teamLeaders.map((leader) => (
-            <p className="absolute -translate-x-20 text-red-500">
-            <option  value={leader.id} key={leader.id}>
-              
-              {formatNames(leader.name,leader.surname)}
-             
-              </option>
-               </p>
-          )
+        <div className="relative">
+          <select
+            value={teamLeaderUserId}
+            onChange={(event) =>
+              setTeamLeaderUserId(event.target.value)
+            }
+            required
+            className="w-full appearance-none rounded-xl border border-slate-300 px-3 py-2.5 text-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="" disabled className="text-slate-900">
+              Selecciona un jefe de equipo
+            </option>
+            {teamLeaders.map((leader) => {
+              const fullName = formatNames(leader.name, leader.surname);
+
+              return (
+                <option
+                  className="text-slate-900"
+                  value={leader.id}
+                  key={leader.id}
+                  title={fullName}
+                >
+                  {fullName}
+                </option>
+              );
+            })}
+          </select>
+
+          <div
             
-          )}
-        </select>
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-3 right-9 flex items-center overflow-hidden"
+          >
+            <span className="shrink-0 whitespace-nowrap text-slate-900">
+              {selectedTeamLeaderName}
+            </span>
+          </div>
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-600"
+          >
+            ▾
+          </span>
+        </div>
 
       </label>
 
