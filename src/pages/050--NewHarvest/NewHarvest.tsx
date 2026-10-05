@@ -11,6 +11,8 @@ const NewHarvest = () => {
     clearError,
     boxTypes,
     fetchBoxTypes,
+    fields,
+    fetchFields,
   } = useHarvesting();
 
     const { foreignWorkers } = useForeignWorkers();
@@ -83,6 +85,10 @@ useEffect(() => {
   void fetchBoxTypes()
 },[fetchBoxTypes])
 
+useEffect(() => {
+  void fetchFields()
+}, [fetchFields])
+
 
 
   return (
@@ -106,16 +112,21 @@ useEffect(() => {
             setTeamLeaderUserId(event.target.value)
           }
           required
-          className="rounded-xl border relative border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-xl border  border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         >
           {teamLeaders.map((leader) => (
-            <option className="" value={leader.id} key={leader.id}>
+            <p className="absolute -translate-x-20 text-red-500">
+            <option  value={leader.id} key={leader.id}>
+              
               {formatNames(leader.name,leader.surname)}
+             
               </option>
+               </p>
           )
             
           )}
         </select>
+
       </label>
 
       <label className="flex flex-col gap-2">
@@ -123,15 +134,31 @@ useEffect(() => {
           Campo y parcela
         </span>
 
-        <input
-          type="text"
+        <select
           value={subfield}
           onChange={(event) =>
             setSubfield(event.target.value)
           }
           required
           className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        />
+        >
+          {[...fields]
+            .sort((a, b) =>
+              a.field.localeCompare(b.field, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              }),
+            )
+            .map((field) => {
+              const label = field.field.trim();
+
+              return (
+                <option key={field.id} value={field.field}>
+                  {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
+                </option>
+              );
+            })}
+        </select>
       </label>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
