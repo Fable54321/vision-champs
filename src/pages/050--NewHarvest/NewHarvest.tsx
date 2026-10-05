@@ -249,6 +249,41 @@ useEffect(() => {
           />
         </label>
 
+           <label className="flex flex-col gap-2">
+          <span className="font-semibold">
+            Tipos de cajas
+          </span>
+
+          <select
+            
+            value={boxType}
+            onChange={(event) =>
+              setBoxType(event.target.value)
+            }
+            required
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              <option>Seleccionar el tipo de caja</option>
+
+              {[...boxTypes]
+                .sort((a, b) =>
+                  a.box_type.localeCompare(b.box_type, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  }),
+                )
+                .map((type) => {
+                  const label = type.box_type.trim();
+
+                  return (
+                    <option key={type.id} value={type.box_type}>
+                      {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
+                    </option>
+                  );
+                })}
+            </select>
+        </label>
+
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
             Sous-produit
@@ -283,38 +318,7 @@ useEffect(() => {
           />
         </label>
 
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Tipos de cajas
-          </span>
-
-          <select
-            
-            value={boxType}
-            onChange={(event) =>
-              setBoxType(event.target.value)
-            }
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            >
-              {[...boxTypes]
-                .sort((a, b) =>
-                  a.box_type.localeCompare(b.box_type, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  }),
-                )
-                .map((type) => {
-                  const label = type.box_type.trim();
-
-                  return (
-                    <option key={type.id} value={type.box_type}>
-                      {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
-                    </option>
-                  );
-                })}
-            </select>
-        </label>
+     
       </div>
 
       <label className="flex flex-col gap-2">
