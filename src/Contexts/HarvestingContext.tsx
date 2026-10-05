@@ -9,7 +9,6 @@ import {
 import { fetchWithAuth } from "../Utils/fetchWithAuth";
 // Adjust path depending on where your helper actually lives
 
-
 export interface HarvestingTracking {
   id: number;
 
@@ -46,6 +45,12 @@ export interface CreateHarvestingTrackingInput {
   harvester: string;
 }
 
+export interface BoxType {
+  id: number;
+  box_type: string;
+  vegetable_id: number;
+}
+
 export interface UpdateHarvestingTrackingInput {
   team_leader_user_id?: number;
   subfield?: string;
@@ -62,12 +67,13 @@ export interface UpdateHarvestingTrackingInput {
   harvester?: string;
 }
 
-
 interface HarvestingContextType {
   harvestingRecords: HarvestingTracking[];
   selectedHarvestingRecord: HarvestingTracking | null;
+  boxTypes: BoxType[];
 
   loading: boolean;
+  loadingBoxTypes: boolean;
   loadingRecord: boolean;
   creating: boolean;
   updating: boolean;
@@ -76,9 +82,9 @@ interface HarvestingContextType {
   error: string | null;
 
   fetchHarvestingRecords: () => Promise<void>;
-  fetchHarvestingRecord: (
-    id: number,
-  ) => Promise<HarvestingTracking | null>;
+  fetchHarvestingRecord: (id: number) => Promise<HarvestingTracking | null>;
+
+  fetchBoxTypes: () => Promise<void>;
 
   createHarvestingRecord: (
     data: CreateHarvestingTrackingInput,
@@ -95,28 +101,24 @@ interface HarvestingContextType {
   clearError: () => void;
 }
 
-
-const HarvestingContext = createContext<
-  HarvestingContextType | undefined
->(undefined);
-
+const HarvestingContext = createContext<HarvestingContextType | undefined>(
+  undefined,
+);
 
 interface HarvestingProviderProps {
   children: ReactNode;
 }
 
-
-export const HarvestingProvider = ({
-  children,
-}: HarvestingProviderProps) => {
+export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
   const [harvestingRecords, setHarvestingRecords] = useState<
     HarvestingTracking[]
   >([]);
 
-  const [
-    selectedHarvestingRecord,
-    setSelectedHarvestingRecord,
-  ] = useState<HarvestingTracking | null>(null);
+  const [selectedHarvestingRecord, setSelectedHarvestingRecord] =
+    useState<HarvestingTracking | null>(null);
+
+  const [boxTypes, setBoxTypes] = useState<BoxType[]>([]);
+  const [loadingBoxTypes, setLoadingBoxTypes] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [loadingRecord, setLoadingRecord] = useState(false);
@@ -126,15 +128,12 @@ export const HarvestingProvider = ({
 
   const [error, setError] = useState<string | null>(null);
 
-
   const fetchHarvestingRecords = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const data = await fetchWithAuth<HarvestingTracking[]>(
-        "/harvesting",
-      );
+      const data = await fetchWithAuth<HarvestingTracking[]>("/harvesting");
 
       setHarvestingRecords(data);
     } catch (err) {
@@ -149,19 +148,15 @@ export const HarvestingProvider = ({
     }
   }, []);
 
-
   const fetchHarvestingRecord = useCallback(
-    async (
-      id: number,
-    ): Promise<HarvestingTracking | null> => {
+    async (id: number): Promise<HarvestingTracking | null> => {
       setLoadingRecord(true);
       setError(null);
 
       try {
-        const data =
-          await fetchWithAuth<HarvestingTracking>(
-            `/harvesting/${id}`,
-          );
+        const data = await fetchWithAuth<HarvestingTracking>(
+          `/harvesting/${id}`,
+        );
 
         setSelectedHarvestingRecord(data);
 
@@ -182,7 +177,6 @@ export const HarvestingProvider = ({
     [],
   );
 
-
   const createHarvestingRecord = useCallback(
     async (
       data: CreateHarvestingTrackingInput,
@@ -191,19 +185,12 @@ export const HarvestingProvider = ({
       setError(null);
 
       try {
-        const created =
-          await fetchWithAuth<HarvestingTracking>(
-            "/harvesting",
-            {
-              method: "POST",
-              body: data,
-            },
-          );
+        const created = await fetchWithAuth<HarvestingTracking>("/harvesting", {
+          method: "POST",
+          body: data,
+        });
 
-        setHarvestingRecords((current) => [
-          created,
-          ...current,
-        ]);
+        setHarvestingRecords((current) => [created, ...current]);
 
         setSelectedHarvestingRecord(created);
 
@@ -224,7 +211,6 @@ export const HarvestingProvider = ({
     [],
   );
 
-
   const updateHarvestingRecord = useCallback(
     async (
       id: number,
@@ -234,19 +220,16 @@ export const HarvestingProvider = ({
       setError(null);
 
       try {
-        const updated =
-          await fetchWithAuth<HarvestingTracking>(
-            `/harvesting/${id}`,
-            {
-              method: "PATCH",
-              body: data,
-            },
-          );
+        const updated = await fetchWithAuth<HarvestingTracking>(
+          `/harvesting/${id}`,
+          {
+            method: "PATCH",
+            body: data,
+          },
+        );
 
         setHarvestingRecords((current) =>
-          current.map((record) =>
-            record.id === id ? updated : record,
-          ),
+          current.map((record) => (record.id === id ? updated : record)),
         );
 
         setSelectedHarvestingRecord((current) =>
@@ -270,19 +253,15 @@ export const HarvestingProvider = ({
     [],
   );
 
-
   const deleteHarvestingRecord = useCallback(
     async (id: number): Promise<boolean> => {
       setDeleting(true);
       setError(null);
 
       try {
-        await fetchWithAuth<HarvestingTracking>(
-          `/harvesting/${id}`,
-          {
-            method: "DELETE",
-          },
-        );
+        await fetchWithAuth<HarvestingTracking>(`/harvesting/${id}`, {
+          method: "DELETE",
+        });
 
         setHarvestingRecords((current) =>
           current.filter((record) => record.id !== id),
@@ -309,16 +288,34 @@ export const HarvestingProvider = ({
     [],
   );
 
-
   const clearSelectedHarvestingRecord = useCallback(() => {
     setSelectedHarvestingRecord(null);
   }, []);
-
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
+
+  const fetchBoxTypes = useCallback(async () => {
+  setLoadingBoxTypes(true);
+  setError(null);
+
+  try {
+    const data = await fetchWithAuth<BoxType[]>("/boxes");
+
+    setBoxTypes(data);
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Impossible de charger les types de boîtes.";
+
+    setError(message);
+  } finally {
+    setLoadingBoxTypes(false);
+  }
+}, []);
 
   return (
     <HarvestingContext.Provider
@@ -326,8 +323,11 @@ export const HarvestingProvider = ({
         harvestingRecords,
         selectedHarvestingRecord,
 
+        boxTypes,
+
         loading,
         loadingRecord,
+        loadingBoxTypes,
         creating,
         updating,
         deleting,
@@ -336,6 +336,7 @@ export const HarvestingProvider = ({
 
         fetchHarvestingRecords,
         fetchHarvestingRecord,
+        fetchBoxTypes,
         createHarvestingRecord,
         updateHarvestingRecord,
         deleteHarvestingRecord,
@@ -349,15 +350,12 @@ export const HarvestingProvider = ({
   );
 };
 
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const useHarvesting = () => {
   const context = useContext(HarvestingContext);
 
   if (!context) {
-    throw new Error(
-      "useHarvesting must be used within a HarvestingProvider",
-    );
+    throw new Error("useHarvesting must be used within a HarvestingProvider");
   }
 
   return context;

@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useHarvesting } from "../../Contexts/HarvestingContext";
 import { useForeignWorkers } from "../../Contexts/ForeignWorkersContext";
 import { formatNames } from "../../Utils/formatNames";
@@ -9,9 +9,13 @@ const NewHarvest = () => {
     creating,
     error,
     clearError,
+    boxTypes,
+    fetchBoxTypes,
   } = useHarvesting();
 
     const { foreignWorkers } = useForeignWorkers();
+
+
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [subfield, setSubfield] = useState("");
@@ -73,6 +77,11 @@ const teamLeaders = useMemo(() => {
     return worker.job_id_1 === 6 || worker.job_id_2 === 6 || worker.job_id_3 === 6
   })
 } ,[foreignWorkers])
+
+
+useEffect(() => {
+  void fetchBoxTypes()
+},[fetchBoxTypes])
 
 
 
@@ -212,18 +221,23 @@ const teamLeaders = useMemo(() => {
 
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Type de boîte
+            Tipos de cajas
           </span>
 
-          <input
-            type="text"
+          <select
+            
             value={boxType}
             onChange={(event) =>
               setBoxType(event.target.value)
             }
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
+            >
+              {boxTypes.map((type) => (
+                <option>{type.box_type}</option>
+              )
+              )}
+            </select>
         </label>
       </div>
 
