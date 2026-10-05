@@ -33,6 +33,9 @@ const NewHarvest = () => {
   const [boxType, setBoxType] = useState("");
   const [harvester, setHarvester] = useState("");
 
+
+  
+
   const [success, setSuccess] = useState(false);
   
 
@@ -122,6 +125,33 @@ const filteredVegetables = useMemo(() => {
 },[vegetables])
 
 
+
+const sortedBoxTypes = useMemo(() => {
+
+  if(typeof vegetableId === "string") {
+    return [];
+  }
+  const firstPart = boxTypes.filter((box) => box.vegetable_id === vegetableId)
+  const secondPart = boxTypes.filter((box) =>  box.vegetable_id !== vegetableId).sort((a,b) => {
+    return a.box_type.localeCompare(b.box_type, undefined , {
+      numeric: true,
+      sensitivity: "base",
+    })
+  })
+
+  return [...firstPart, ...secondPart];
+},[vegetableId, boxTypes])
+
+const sortedBoxTypesLength = useMemo(() => {
+
+return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
+
+},[vegetableId, boxTypes])
+
+
+useEffect(() => {
+  console.log(sortedBoxTypesLength);
+},[sortedBoxTypesLength])
 
 
   return (
@@ -262,7 +292,7 @@ const filteredVegetables = useMemo(() => {
             
             value={vegetableId}
             onChange={(event) =>
-              setVegetableId(event.target.value)
+              setVegetableId(Number(event.target.value))
 
             }
             required
@@ -294,18 +324,12 @@ const filteredVegetables = useMemo(() => {
             >
               <option>Seleccionar el tipo de caja</option>
 
-              {[...boxTypes]
-                .sort((a, b) =>
-                  a.box_type.localeCompare(b.box_type, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  }),
-                )
-                .map((type) => {
+             {sortedBoxTypes
+                .map((type, idx) => {
                   const label = type.box_type.trim();
 
                   return (
-                    <option key={type.id} value={type.box_type}>
+                    <option key={type.id} value={type.box_type} className={`${idx < sortedBoxTypesLength ? "font-bold" : ""}`}>
                       {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
                     </option>
                   );

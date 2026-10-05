@@ -41,6 +41,21 @@ export type FinishedProduct = {
   estimated_pallet_qty: string | null
 }
 
+export type RawProduct = {
+  id: number;
+  vegetable_id: number;
+  product_code: string;
+  cup_label: string;
+  description: string;
+  product_type: string;
+  quantity_format: number;
+  unit_format: string;
+  product_group: string;
+  qty_per_pallet: number;
+  transport_weight: number;
+  is_active: boolean;
+}
+
 type VegetablesContextValue = {
   vegetables: Vegetable[]
   cultivars: Cultivar[]
