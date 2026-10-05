@@ -51,6 +51,11 @@ export interface BoxType {
   vegetable_id: number;
 }
 
+export interface Field {
+  id: string;
+  field: string;
+}
+
 export interface UpdateHarvestingTrackingInput {
   team_leader_user_id?: number;
   subfield?: string;
@@ -71,9 +76,11 @@ interface HarvestingContextType {
   harvestingRecords: HarvestingTracking[];
   selectedHarvestingRecord: HarvestingTracking | null;
   boxTypes: BoxType[];
+  fields: Field[];
 
   loading: boolean;
   loadingBoxTypes: boolean;
+  loadingFields: boolean;
   loadingRecord: boolean;
   creating: boolean;
   updating: boolean;
@@ -85,6 +92,8 @@ interface HarvestingContextType {
   fetchHarvestingRecord: (id: number) => Promise<HarvestingTracking | null>;
 
   fetchBoxTypes: () => Promise<void>;
+
+  fetchFields: () => Promise<void>
 
   createHarvestingRecord: (
     data: CreateHarvestingTrackingInput,
@@ -119,6 +128,9 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
 
   const [boxTypes, setBoxTypes] = useState<BoxType[]>([]);
   const [loadingBoxTypes, setLoadingBoxTypes] = useState(false);
+
+  const [fields, setFields] = useState<Field[]>([]);
+  const [loadingFields, setLoadingFields] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [loadingRecord, setLoadingRecord] = useState(false);
@@ -317,6 +329,27 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
   }
 }, []);
 
+const fetchFields = useCallback(async () => {
+  setLoadingFields(true);
+  setError(null);
+
+  try {
+    const data = await fetchWithAuth<Field[]>("/getFields");
+
+    setFields(data);
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Impossible de charger les champs.";
+
+    setError(message);
+  } finally {
+    setLoadingFields(false);
+  }
+}, []);
+
+
   return (
     <HarvestingContext.Provider
       value={{
@@ -324,10 +357,12 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
         selectedHarvestingRecord,
 
         boxTypes,
+        fields,
 
         loading,
         loadingRecord,
         loadingBoxTypes,
+        loadingFields,
         creating,
         updating,
         deleting,
@@ -337,6 +372,7 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
         fetchHarvestingRecords,
         fetchHarvestingRecord,
         fetchBoxTypes,
+        fetchFields,
         createHarvestingRecord,
         updateHarvestingRecord,
         deleteHarvestingRecord,

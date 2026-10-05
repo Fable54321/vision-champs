@@ -240,11 +240,15 @@ useEffect(() => {
                     sensitivity: "base",
                   }),
                 )
-                .map((type) => (
-                  <option key={type.id} value={type.box_type}>
-                    {type.box_type}
-                  </option>
-                ))}
+                .map((type) => {
+                  const label = type.box_type.trim();
+
+                  return (
+                    <option key={type.id} value={type.box_type}>
+                      {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
+                    </option>
+                  );
+                })}
             </select>
         </label>
       </div>
