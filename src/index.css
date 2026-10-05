@@ -355,6 +355,16 @@ button:disabled {
   }
 }
 
+.move-left-right{
+  animation: move-left-right 7500ms ease-in-out infinite;
+  
+}
+@keyframes move-left-right {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-40%); }
+  100% { transform: translateX(0); }
+}
+
 
 
 html,

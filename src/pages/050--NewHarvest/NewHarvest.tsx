@@ -151,7 +151,7 @@ useEffect(() => {
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 left-3 right-9 flex items-center overflow-hidden"
           >
-            <span className="shrink-0 whitespace-nowrap text-slate-900">
+            <span className={` ${selectedTeamLeaderName.length > 20 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-slate-900`}>
               {selectedTeamLeaderName}
             </span>
           </div>
