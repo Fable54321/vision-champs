@@ -79,14 +79,12 @@ button:disabled {
 
 .button-generic {
   background-color: #4b7312;
-
   border-radius: 4px;
   box-sizing: border-box;
   color: #FFFFFF;
   cursor: pointer;
   direction: ltr;
   font-family: 'Merriweather', sans-serif;
-
   font-weight: bold;
   letter-spacing: -.022em;
   line-height: 1.47059;
