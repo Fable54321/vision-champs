@@ -82,12 +82,12 @@ const teamLeaders = useMemo(() => {
       className="relative z-10 flex w-[min(95%,700px)] flex-col gap-5 rounded-2xl bg-white/50 p-6 shadow-lg"
     >
       <h2 className="text-2xl font-bold">
-        Nouvelle récolte
+        Nueva cosecha
       </h2>
 
       <label className="flex flex-col gap-2">
         <span className="font-semibold">
-          Chef d'équipe
+          Jefe de equipo
         </span>
 
         <select
@@ -111,7 +111,7 @@ const teamLeaders = useMemo(() => {
 
       <label className="flex flex-col gap-2">
         <span className="font-semibold">
-          Sous-champ
+          Campo y parcela
         </span>
 
         <input
@@ -128,7 +128,7 @@ const teamLeaders = useMemo(() => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Date de récolte
+            Fecha de cosecha
           </span>
 
           <input
@@ -144,7 +144,7 @@ const teamLeaders = useMemo(() => {
 
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Heure
+            Hora
           </span>
 
           <input
@@ -162,7 +162,7 @@ const teamLeaders = useMemo(() => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Produit
+            Producto
           </span>
 
           <input
