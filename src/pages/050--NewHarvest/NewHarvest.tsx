@@ -24,7 +24,11 @@ const NewHarvest = () => {
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [subfield, setSubfield] = useState("");
-  const [harvestingDate, setHarvestingDate] = useState("");
+  const [harvestingDate, setHarvestingDate] = useState(() => {
+    const today = new Date();
+    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+    return localDate.toISOString().split('T')[0];
+  });
   const [harvestingTime, setHarvestingTime] = useState("");
   
   const [vegetableId, setVegetableId] = useState<number | string>("")
@@ -233,6 +237,7 @@ useEffect(() => {
           required
           className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         >
+          <option>Seleccionar un campo</option>
           {[...fields]
             .sort((a, b) =>
               a.field.localeCompare(b.field, undefined, {
