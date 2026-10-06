@@ -56,6 +56,12 @@ export interface Field {
   field: string;
 }
 
+export interface Harvester {
+  id: number;
+  harvester_name: string;
+  harvester_number: string;
+}
+
 export interface UpdateHarvestingTrackingInput {
   team_leader_user_id?: number;
   subfield?: string;
@@ -77,6 +83,7 @@ interface HarvestingContextType {
   selectedHarvestingRecord: HarvestingTracking | null;
   boxTypes: BoxType[];
   fields: Field[];
+  harvesters: Harvester[];
 
   loading: boolean;
   loadingBoxTypes: boolean;
@@ -94,6 +101,8 @@ interface HarvestingContextType {
   fetchBoxTypes: () => Promise<void>;
 
   fetchFields: () => Promise<void>
+
+  fetchHarvesters:() => Promise<void> 
 
   createHarvestingRecord: (
     data: CreateHarvestingTrackingInput,
@@ -131,6 +140,8 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
 
   const [fields, setFields] = useState<Field[]>([]);
   const [loadingFields, setLoadingFields] = useState(false);
+
+  const [harvesters, setHarvesters] = useState<Harvester[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [loadingRecord, setLoadingRecord] = useState(false);
@@ -349,6 +360,29 @@ const fetchFields = useCallback(async () => {
   }
 }, []);
 
+const fetchHarvesters = useCallback(async () => {
+
+  setError(null)
+  setLoading(true)
+  try {
+    const data = await fetchWithAuth<Harvester[]>("/equipment/harvesters");
+
+    setHarvesters(data)
+
+
+  } catch (err) {
+    const message = 
+    err instanceof Error
+    ? err.message
+    : "Impossible de charger les récolteuses"
+    setError(message);
+  } finally {
+    setLoading(false)
+    
+  }
+
+}, [])
+
 
   return (
     <HarvestingContext.Provider
@@ -358,6 +392,7 @@ const fetchFields = useCallback(async () => {
 
         boxTypes,
         fields,
+        harvesters,
 
         loading,
         loadingRecord,
@@ -373,6 +408,7 @@ const fetchFields = useCallback(async () => {
         fetchHarvestingRecord,
         fetchBoxTypes,
         fetchFields,
+        fetchHarvesters,
         createHarvestingRecord,
         updateHarvestingRecord,
         deleteHarvestingRecord,
