@@ -33,7 +33,18 @@ const NewHarvest = () => {
 
   return `${year}-${month}-${day}`;
 });
-  const [harvestingTime, setHarvestingTime] = useState("");
+
+
+const getCurrentTime = () => {
+  const now = new Date();
+
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+};
+
+  const [harvestingTime, setHarvestingTime] = useState(getCurrentTime);
   
   const [vegetableId, setVegetableId] = useState<number | string>("")
   const [subProduct, setSubProduct] = useState("");
@@ -45,6 +56,15 @@ const NewHarvest = () => {
   
 
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+      setHarvestingTime(getCurrentTime());
+    }, 60_000);
+
+    return () => clearInterval(interval);
+  },[])
   
 
   const resetForm = () => {
@@ -159,6 +179,9 @@ const sortedBoxTypesLength = useMemo(() => {
 return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
 
 },[vegetableId, boxTypes])
+
+
+
 
 
 
