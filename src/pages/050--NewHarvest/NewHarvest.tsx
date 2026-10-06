@@ -14,65 +14,57 @@ const NewHarvest = () => {
     fetchBoxTypes,
     fields,
     fetchFields,
+    harvesters,
+    fetchHarvesters,
   } = useHarvesting();
 
-  const { fetchVegetables, vegetables, fetchAllProducts, allProducts } = useVegetables();
+  const { fetchVegetables, vegetables, fetchAllProducts, allProducts } =
+    useVegetables();
 
-    const { foreignWorkers } = useForeignWorkers();
-
-
+  const { foreignWorkers } = useForeignWorkers();
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [subfield, setSubfield] = useState("");
- const [harvestingDate, setHarvestingDate] = useState(() => {
-  const today = new Date();
+  const [harvestingDate, setHarvestingDate] = useState(() => {
+    const today = new Date();
 
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-});
+    return `${year}-${month}-${day}`;
+  });
 
+  const getCurrentTime = () => {
+    const now = new Date();
 
-const getCurrentTime = () => {
-  const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
 
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-
-  return `${hours}:${minutes}`;
-};
+    return `${hours}:${minutes}`;
+  };
 
   const [harvestingTime, setHarvestingTime] = useState(getCurrentTime);
-  
-  const [vegetableId, setVegetableId] = useState<number | string>("")
+
+  const [vegetableId, setVegetableId] = useState<number | string>("");
   const [productId, setProductId] = useState<number | string>("");
   const [amountOfBoxes, setAmountOfBoxes] = useState("");
   const [boxType, setBoxType] = useState("");
-  const [harvester, setHarvester] = useState("");
-
-
-  
+  const [harvesterId, setHarvesterId] = useState<number | "">("");
 
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-
     const interval = setInterval(() => {
       setHarvestingTime(getCurrentTime());
     }, 60_000);
 
     return () => clearInterval(interval);
-  },[])
-
-
-
+  }, []);
 
   useEffect(() => {
     console.log(allProducts);
-  },[allProducts])
-  
+  }, [allProducts]);
 
   const resetForm = () => {
     setTeamLeaderUserId("");
@@ -83,20 +75,22 @@ const getCurrentTime = () => {
     setProductId("");
     setAmountOfBoxes("");
     setBoxType("");
-    setHarvester("");
+    setHarvesterId("");
   };
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if(!vegetableId || typeof vegetableId === "string"){
-      throw new Error("El cultivo es obligatorio")
+    if (!vegetableId || typeof vegetableId === "string") {
+      throw new Error("El cultivo es obligatorio");
     }
 
-    if(!productId || typeof productId === "string"){
-      throw new Error("El producto es obligatorio")
+    if (!productId || typeof productId === "string") {
+      throw new Error("El producto es obligatorio");
+    }
+
+    if (harvesterId === "") {
+      throw new Error("La cosechadora es obligatoria");
     }
 
     clearError();
@@ -111,7 +105,7 @@ const getCurrentTime = () => {
       product_id: productId,
       amount_of_boxes: Number(amountOfBoxes),
       box_type: boxType.trim(),
-      harvester: harvester.trim(),
+      harvester_id: harvesterId,
     });
 
     if (!created) {
@@ -126,115 +120,105 @@ const getCurrentTime = () => {
     }, 3000);
   };
 
-const teamLeaders = useMemo(() => {
-  return foreignWorkers.filter((worker) => {
-    return worker.job_id_1 === 6 || worker.job_id_2 === 6 || worker.job_id_3 === 6
-  })
-} ,[foreignWorkers])
+  const teamLeaders = useMemo(() => {
+    return foreignWorkers.filter((worker) => {
+      return (
+        worker.job_id_1 === 6 || worker.job_id_2 === 6 || worker.job_id_3 === 6
+      );
+    });
+  }, [foreignWorkers]);
 
-const selectedTeamLeaderName = useMemo(() => {
-  const selectedLeader = teamLeaders.find(
-    (leader) => String(leader.id) === teamLeaderUserId,
-  );
+  const selectedTeamLeaderName = useMemo(() => {
+    const selectedLeader = teamLeaders.find(
+      (leader) => String(leader.id) === teamLeaderUserId,
+    );
 
-  return selectedLeader
-    ? formatNames(selectedLeader.name, selectedLeader.surname)
-    : "Selecciona un jefe de equipo";
-}, [teamLeaderUserId, teamLeaders]);
+    return selectedLeader
+      ? formatNames(selectedLeader.name, selectedLeader.surname)
+      : "Selecciona un jefe de equipo";
+  }, [teamLeaderUserId, teamLeaders]);
 
+  useEffect(() => {
+    void fetchBoxTypes();
+  }, [fetchBoxTypes]);
 
+  useEffect(() => {
+    void fetchFields();
+  }, [fetchFields]);
 
+  useEffect(() => {
+    void fetchVegetables();
+  }, [fetchVegetables]);
 
-useEffect(() => {
-  void fetchBoxTypes()
-},[fetchBoxTypes])
-
-useEffect(() => {
-  void fetchFields()
-}, [fetchFields])
-
-useEffect(() => {
-  void fetchVegetables()
-},[fetchVegetables])
+  useEffect(() => {
+    void fetchHarvesters();
+  }, [fetchHarvesters]);
 
   useEffect(() => {
     void fetchAllProducts();
-  }, [fetchAllProducts])
+  }, [fetchAllProducts]);
 
+  const filteredVegetables = useMemo(() => {
+    if (!vegetables) return;
 
-const filteredVegetables = useMemo(() => {
-  if(!vegetables) return;
+    return vegetables.filter(
+      (veg) => !veg.is_generic && veg.vegetable !== "AUCUNE",
+    );
+  }, [vegetables]);
 
-  return vegetables.filter((veg) => !veg.is_generic && veg.vegetable !== "AUCUNE")
-},[vegetables])
+  const sortedBoxTypes = useMemo(() => {
+    if (typeof vegetableId === "string") {
+      return [];
+    }
+    const firstPart = boxTypes.filter(
+      (box) => box.vegetable_id === vegetableId,
+    );
+    const secondPart = boxTypes
+      .filter((box) => box.vegetable_id !== vegetableId)
+      .sort((a, b) => {
+        return a.box_type.localeCompare(b.box_type, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
 
+    return [...firstPart, ...secondPart];
+  }, [vegetableId, boxTypes]);
 
+  const sortedBoxTypesLength = useMemo(() => {
+    return boxTypes.filter((box) => box.vegetable_id === vegetableId).length;
+  }, [vegetableId, boxTypes]);
 
-const sortedBoxTypes = useMemo(() => {
+  const sortedProducts = useMemo(() => {
+    const firstPart = allProducts.filter(
+      (prod) => prod.vegetable_id === vegetableId,
+    );
+    const secondPart = allProducts.filter(
+      (prod) => prod.vegetable_id !== vegetableId,
+    );
 
-  if(typeof vegetableId === "string") {
-    return [];
-  }
-  const firstPart = boxTypes.filter((box) => box.vegetable_id === vegetableId)
-  const secondPart = boxTypes.filter((box) =>  box.vegetable_id !== vegetableId).sort((a,b) => {
-    return a.box_type.localeCompare(b.box_type, undefined , {
-      numeric: true,
-      sensitivity: "base",
-    })
-  })
+    return [...firstPart, ...secondPart];
+  }, [vegetableId, allProducts]);
 
-  return [...firstPart, ...secondPart];
-},[vegetableId, boxTypes])
-
-const sortedBoxTypesLength = useMemo(() => {
-
-return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
-
-},[vegetableId, boxTypes])
-
-
-const sortedProducts =  useMemo(() => {
-
-  const firstPart = allProducts.filter((prod) => prod.vegetable_id === vegetableId)
-  const secondPart = allProducts.filter((prod) => prod.vegetable_id !== vegetableId)
-
-  return [...firstPart, ...secondPart]
-  
-
-
-},[vegetableId, allProducts])
-
-const sortedProductsLength = useMemo(() => {
-  return allProducts.filter((prod) => prod.vegetable_id === vegetableId).length
-},[allProducts, vegetableId])
-
-
-
-
-
-
-
+  const sortedProductsLength = useMemo(() => {
+    return allProducts.filter((prod) => prod.vegetable_id === vegetableId)
+      .length;
+  }, [allProducts, vegetableId]);
 
   return (
     <form
       onSubmit={handleSubmit}
       className="relative z-10 flex w-[min(100%,550px)] flex-col gap-5 rounded-2xl bg-white/50 p-6 shadow-lg"
     >
-      <h2 className="text-2xl font-bold">
-        Nueva cosecha
-      </h2>
+      <h2 className="text-2xl font-bold">Nueva cosecha</h2>
 
       <label className="flex flex-col gap-2">
-        <span className="font-semibold">
-          Jefe de equipo
-        </span>
+        <span className="font-semibold">Jefe de equipo</span>
 
         <div className="relative">
           <select
             value={teamLeaderUserId}
-            onChange={(event) =>
-              setTeamLeaderUserId(event.target.value)
-            }
+            onChange={(event) => setTeamLeaderUserId(event.target.value)}
             required
             className="w-full appearance-none rounded-xl border border-slate-300 px-3 py-2.5 text-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
@@ -258,11 +242,12 @@ const sortedProductsLength = useMemo(() => {
           </select>
 
           <div
-            
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 left-3 right-9 flex items-center overflow-hidden"
           >
-            <span className={` ${selectedTeamLeaderName.length > 20 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-slate-900`}>
+            <span
+              className={` ${selectedTeamLeaderName.length > 20 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-slate-900`}
+            >
               {selectedTeamLeaderName}
             </span>
           </div>
@@ -274,19 +259,14 @@ const sortedProductsLength = useMemo(() => {
             ▾
           </span>
         </div>
-
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="font-semibold">
-          Campo y parcela
-        </span>
+        <span className="font-semibold">Campo y parcela</span>
 
         <select
           value={subfield}
-          onChange={(event) =>
-            setSubfield(event.target.value)
-          }
+          onChange={(event) => setSubfield(event.target.value)}
           required
           className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         >
@@ -312,32 +292,24 @@ const sortedProductsLength = useMemo(() => {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Fecha de cosecha
-          </span>
+          <span className="font-semibold">Fecha de cosecha</span>
 
           <input
             type="date"
             value={harvestingDate}
-            onChange={(event) =>
-              setHarvestingDate(event.target.value)
-            }
+            onChange={(event) => setHarvestingDate(event.target.value)}
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Hora
-          </span>
+          <span className="font-semibold">Hora</span>
 
           <input
             type="time"
             value={harvestingTime}
-            onChange={(event) =>
-              setHarvestingTime(event.target.value)
-            }
+            onChange={(event) => setHarvestingTime(event.target.value)}
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
@@ -346,126 +318,108 @@ const sortedProductsLength = useMemo(() => {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Cultivo
-          </span>
+          <span className="font-semibold">Cultivo</span>
 
           <select
-            
             value={vegetableId}
-            onChange={(event) =>
-              setVegetableId(Number(event.target.value))
-
-            }
+            onChange={(event) => setVegetableId(Number(event.target.value))}
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option>Seleccionar el cultivo</option>
             {filteredVegetables?.map((veg) => (
-              <option
-               key={veg.id}
-               value={veg.id}
-               >{veg.vegetable}</option>
+              <option key={veg.id} value={veg.id}>
+                {veg.vegetable}
+              </option>
             ))}
-            </select>
-        </label>
-
-           <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Tipos de cajas
-          </span>
-
-          <select
-            
-            value={boxType}
-            onChange={(event) =>
-              setBoxType(event.target.value)
-            }
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            >
-              <option>Seleccionar el tipo de caja</option>
-
-             {sortedBoxTypes
-                .map((type, idx) => {
-                  const label = type.box_type.trim();
-
-                  return (
-                    <option key={type.id} value={type.box_type} className={`${idx < sortedBoxTypesLength ? "font-bold" : ""}`}>
-                      {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
-                    </option>
-                  );
-                })}
-            </select>
+          </select>
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Producto
-          </span>
+          <span className="font-semibold">Tipos de cajas</span>
+
+          <select
+            value={boxType}
+            onChange={(event) => setBoxType(event.target.value)}
+            required
+            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            <option>Seleccionar el tipo de caja</option>
+
+            {sortedBoxTypes.map((type, idx) => {
+              const label = type.box_type.trim();
+
+              return (
+                <option
+                  key={type.id}
+                  value={type.box_type}
+                  className={`${idx < sortedBoxTypesLength ? "font-bold" : ""}`}
+                >
+                  {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+
+        <label className="flex flex-col gap-2">
+          <span className="font-semibold">Producto</span>
 
           <select
             value={productId}
-            onChange={(event) =>
-              setProductId(event.target.value)
-            }
+            onChange={(event) => setProductId(event.target.value)}
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
-
             <option> Seleccionar un producto</option>
 
             {sortedProducts.map((product, idx) => (
               <option
-              key={product.id}
-              value={product.id}
-              className={`${idx < sortedProductsLength ? "font-bold" : ""}`}
+                key={product.id}
+                value={product.id}
+                className={`${idx < sortedProductsLength ? "font-bold" : ""}`}
               >
                 {product.product_source === "finished_product"
-                ? product.full_name
-                : product.description
-              }
+                  ? product.full_name
+                  : product.description}
               </option>
             ))}
-            </select>
+          </select>
         </label>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
-          <span className="font-semibold">
-            Numero de cajas
-          </span>
+          <span className="font-semibold">Numero de cajas</span>
 
           <input
             type="number"
             min="1"
             value={amountOfBoxes}
-            onChange={(event) =>
-              setAmountOfBoxes(event.target.value)
-            }
+            onChange={(event) => setAmountOfBoxes(event.target.value)}
             required
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </label>
-
-     
       </div>
 
       <label className="flex flex-col gap-2">
-        <span className="font-semibold">
-          Récolteuse
-        </span>
+        <span className="font-semibold">Cosechadora</span>
 
-        <input
-          type="text"
-          value={harvester}
-          onChange={(event) =>
-            setHarvester(event.target.value)
-          }
+        <select
+          value={harvesterId}
+          onChange={(event) => setHarvesterId(Number(event.target.value))}
           required
-          placeholder="Ex: Récolteuse 1"
           className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        />
+        >
+          <option value="" disabled>
+            Seleccionar la cosechadora
+          </option>
+          {harvesters.map((harvester) => (
+            <option value={harvester.id} key={harvester.id}>
+              {`${harvester.harvester_number} - ${harvester.harvester_name}`}
+            </option>
+          ))}
+        </select>
       </label>
 
       {error && (
@@ -485,9 +439,7 @@ const sortedProductsLength = useMemo(() => {
         disabled={creating}
         className="rounded-xl bg-primary px-5 py-3 font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {creating
-          ? "Enregistrement..."
-          : "Enregistrer la récolte"}
+        {creating ? "Enregistrement..." : "Enregistrer la récolte"}
       </button>
     </form>
   );

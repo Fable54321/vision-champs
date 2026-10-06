@@ -42,7 +42,7 @@ export interface CreateHarvestingTrackingInput {
   amount_of_boxes: number;
   box_type: string;
 
-  harvester: string;
+  harvester_id: number;
 }
 
 export interface BoxType {
