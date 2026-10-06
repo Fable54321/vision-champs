@@ -19,7 +19,7 @@ export interface HarvestingTracking {
   harvesting_time: string;
 
   product: string;
-  sub_product: string | null;
+  product_id: number;
 
   amount_of_boxes: number;
   box_type: string;
@@ -37,7 +37,7 @@ export interface CreateHarvestingTrackingInput {
   harvesting_time: string;
 
   vegetable_id: number;
-  sub_product?: string | null;
+  product_id: number;
 
   amount_of_boxes: number;
   box_type: string;
@@ -64,7 +64,7 @@ export interface UpdateHarvestingTrackingInput {
   harvesting_time?: string;
 
   vegetable_id: number;
-  sub_product?: string | null;
+  product_id: number;
 
   amount_of_boxes?: number;
   box_type?: string;

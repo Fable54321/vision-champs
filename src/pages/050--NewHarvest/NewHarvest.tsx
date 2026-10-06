@@ -47,7 +47,7 @@ const getCurrentTime = () => {
   const [harvestingTime, setHarvestingTime] = useState(getCurrentTime);
   
   const [vegetableId, setVegetableId] = useState<number | string>("")
-  const [subProduct, setSubProduct] = useState("");
+  const [productId, setProductId] = useState<number | string>("");
   const [amountOfBoxes, setAmountOfBoxes] = useState("");
   const [boxType, setBoxType] = useState("");
   const [harvester, setHarvester] = useState("");
@@ -80,7 +80,7 @@ const getCurrentTime = () => {
     setHarvestingDate("");
     setHarvestingTime("");
     setVegetableId("");
-    setSubProduct("");
+    setProductId("");
     setAmountOfBoxes("");
     setBoxType("");
     setHarvester("");
@@ -92,7 +92,11 @@ const getCurrentTime = () => {
     event.preventDefault();
 
     if(!vegetableId || typeof vegetableId === "string"){
-      throw new Error("La culture est obligatoire")
+      throw new Error("El cultivo es obligatorio")
+    }
+
+    if(!productId || typeof productId === "string"){
+      throw new Error("El producto es obligatorio")
     }
 
     clearError();
@@ -104,10 +108,7 @@ const getCurrentTime = () => {
       harvesting_date: harvestingDate,
       harvesting_time: harvestingTime,
       vegetable_id: vegetableId,
-      sub_product:
-        subProduct.trim() === ""
-          ? null
-          : subProduct.trim(),
+      product_id: productId,
       amount_of_boxes: Number(amountOfBoxes),
       box_type: boxType.trim(),
       harvester: harvester.trim(),
@@ -190,6 +191,22 @@ const sortedBoxTypesLength = useMemo(() => {
 return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
 
 },[vegetableId, boxTypes])
+
+
+const sortedProducts =  useMemo(() => {
+
+  const firstPart = allProducts.filter((prod) => prod.vegetable_id === vegetableId)
+  const secondPart = allProducts.filter((prod) => prod.vegetable_id !== vegetableId)
+
+  return [...firstPart, ...secondPart]
+  
+
+
+},[vegetableId, allProducts])
+
+const sortedProductsLength = useMemo(() => {
+  return allProducts.filter((prod) => prod.vegetable_id === vegetableId).length
+},[allProducts, vegetableId])
 
 
 
@@ -387,14 +404,29 @@ return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
             Producto
           </span>
 
-          <input
-            type="text"
-            value={subProduct}
+          <select
+            value={productId}
             onChange={(event) =>
-              setSubProduct(event.target.value)
+              setProductId(event.target.value)
             }
             className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
+          >
+
+            <option> Seleccionar un producto</option>
+
+            {sortedProducts.map((product, idx) => (
+              <option
+              key={product.id}
+              value={product.id}
+              className={`${idx < sortedProductsLength ? "font-bold" : ""}`}
+              >
+                {product.product_source === "finished_product"
+                ? product.full_name
+                : product.description
+              }
+              </option>
+            ))}
+            </select>
         </label>
       </div>
 
