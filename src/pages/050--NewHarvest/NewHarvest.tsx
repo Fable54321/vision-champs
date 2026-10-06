@@ -24,11 +24,15 @@ const NewHarvest = () => {
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [subfield, setSubfield] = useState("");
-  const [harvestingDate, setHarvestingDate] = useState(() => {
-    const today = new Date();
-    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
-    return localDate.toISOString().split('T')[0];
-  });
+ const [harvestingDate, setHarvestingDate] = useState(() => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+});
   const [harvestingTime, setHarvestingTime] = useState("");
   
   const [vegetableId, setVegetableId] = useState<number | string>("")
@@ -157,9 +161,7 @@ return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
 },[vegetableId, boxTypes])
 
 
-useEffect(() => {
-  console.log(vegetableId);
-},[ vegetableId])
+
 
 
   return (
