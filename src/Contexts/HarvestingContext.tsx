@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import { fetchWithAuth } from "../Utils/fetchWithAuth";
-// Adjust path depending on where your helper actually lives
+
 
 export interface HarvestingTracking {
   id: number;
@@ -145,7 +145,7 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
     setError(null);
 
     try {
-      const data = await fetchWithAuth<HarvestingTracking[]>("/harvesting");
+      const data = await fetchWithAuth<HarvestingTracking[]>("/trackability/harvesting");
 
       setHarvestingRecords(data);
     } catch (err) {
@@ -167,7 +167,7 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
 
       try {
         const data = await fetchWithAuth<HarvestingTracking>(
-          `/harvesting/${id}`,
+          `/trackability/harvesting/${id}`,
         );
 
         setSelectedHarvestingRecord(data);
@@ -197,7 +197,7 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
       setError(null);
 
       try {
-        const created = await fetchWithAuth<HarvestingTracking>("/harvesting", {
+        const created = await fetchWithAuth<HarvestingTracking>("/trackability/harvesting", {
           method: "POST",
           body: data,
         });
@@ -233,7 +233,7 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
 
       try {
         const updated = await fetchWithAuth<HarvestingTracking>(
-          `/harvesting/${id}`,
+          `/trackability/harvesting/${id}`,
           {
             method: "PATCH",
             body: data,
@@ -271,7 +271,7 @@ export const HarvestingProvider = ({ children }: HarvestingProviderProps) => {
       setError(null);
 
       try {
-        await fetchWithAuth<HarvestingTracking>(`/harvesting/${id}`, {
+        await fetchWithAuth<HarvestingTracking>(`/trackability/harvesting/${id}`, {
           method: "DELETE",
         });
 

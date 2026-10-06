@@ -84,6 +84,10 @@ const NewHarvest = () => {
 
     setSuccess(true);
     resetForm();
+
+    setTimeout(() => {
+      setSuccess(false);
+    }, 3000);
   };
 
 const teamLeaders = useMemo(() => {
@@ -150,14 +154,14 @@ return boxTypes.filter((box) => box.vegetable_id === vegetableId ).length
 
 
 useEffect(() => {
-  console.log(sortedBoxTypesLength);
-},[sortedBoxTypesLength])
+  console.log(vegetableId);
+},[ vegetableId])
 
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative z-10 flex w-[min(95%,700px)] flex-col gap-5 rounded-2xl bg-white/50 p-6 shadow-lg"
+      className="relative z-10 flex w-[min(100%,550px)] flex-col gap-5 rounded-2xl bg-white/50 p-6 shadow-lg"
     >
       <h2 className="text-2xl font-bold">
         Nueva cosecha
@@ -285,7 +289,7 @@ useEffect(() => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Producto
+            Cultivo
           </span>
 
           <select
@@ -339,7 +343,7 @@ useEffect(() => {
 
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Sous-produit
+            Producto
           </span>
 
           <input
@@ -356,7 +360,7 @@ useEffect(() => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className="font-semibold">
-            Nombre de boîtes
+            Numero de cajas
           </span>
 
           <input
@@ -399,7 +403,7 @@ useEffect(() => {
 
       {success && (
         <p className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-          Récolte enregistrée avec succès.
+          La cosecha se registró correctamente
         </p>
       )}
 
