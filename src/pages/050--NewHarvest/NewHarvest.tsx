@@ -16,7 +16,7 @@ const NewHarvest = () => {
     fetchFields,
   } = useHarvesting();
 
-  const { fetchVegetables, vegetables } = useVegetables();
+  const { fetchVegetables, vegetables, fetchAllProducts, allProducts } = useVegetables();
 
     const { foreignWorkers } = useForeignWorkers();
 
@@ -65,6 +65,13 @@ const getCurrentTime = () => {
 
     return () => clearInterval(interval);
   },[])
+
+
+
+
+  useEffect(() => {
+    console.log(allProducts);
+  },[allProducts])
   
 
   const resetForm = () => {
@@ -148,6 +155,10 @@ useEffect(() => {
 useEffect(() => {
   void fetchVegetables()
 },[fetchVegetables])
+
+  useEffect(() => {
+    void fetchAllProducts();
+  }, [fetchAllProducts])
 
 
 const filteredVegetables = useMemo(() => {

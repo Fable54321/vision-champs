@@ -41,6 +41,40 @@ export type FinishedProduct = {
   estimated_pallet_qty: string | null
 }
 
+export type Products = Array<
+  | {
+      product_source: "finished_product";
+      id: number;
+      vegetable_id: number;
+      full_name: string;
+      product_code: string;
+      cup: string | null;
+      is_active: boolean;
+      quantity_format: string | null;
+      product_type: string;
+      qty_per_pallet: number | null;
+      stacking_possibility: number | null;
+      weight: string | null;
+    }
+  | {
+      product_source: "raw_product";
+      id: string;
+      vegetable_id: string;
+      product_code: string;
+      cup_label: string | null;
+      description: string;
+      product_type: string;
+      quantity_format: string | null;
+      unit_format: string | null;
+      product_group: string | null;
+      qty_per_pallet: number | null;
+      transport_weight: string | null;
+      is_active: boolean;
+      created_at: string;
+      updated_at: string;
+    }
+>;
+
 export type RawProduct = {
   id: number;
   vegetable_id: number;
@@ -60,12 +94,14 @@ type VegetablesContextValue = {
   vegetables: Vegetable[]
   cultivars: Cultivar[]
   finishedProducts: FinishedProduct[]
+  allProducts: Products;
   selectedCultivar: Cultivar | null
   vegetablesLoading: boolean
   vegetablesError: string | null
   fetchVegetables: () => Promise<Vegetable[]>
   fetchCultivars: () => Promise<Cultivar[]>
   fetchFinishedProducts: () => Promise<FinishedProduct[]>
+  fetchAllProducts: () => Promise<Products>
   fetchCultivar: (cultivarId: number) => Promise<Cultivar>
   createCultivar: (vegetableId: number, cultivar: string) => Promise<Cultivar>
   clearVegetablesError: () => void
@@ -79,6 +115,7 @@ export function VegetablesProvider({ children }: { children: ReactNode }) {
   const [vegetables, setVegetables] = useState<Vegetable[]>([])
   const [cultivars, setCultivars] = useState<Cultivar[]>([])
   const [finishedProducts, setFinishedProducts] = useState<FinishedProduct[]>([])
+  const [allProducts, setAllProducts] =useState<Products>([]);
   const [selectedCultivar, setSelectedCultivar] = useState<Cultivar | null>(null)
   const [vegetablesLoading, setVegetablesLoading] = useState(false)
   const [vegetablesError, setVegetablesError] = useState<string | null>(null)
@@ -123,6 +160,13 @@ export function VegetablesProvider({ children }: { children: ReactNode }) {
     return data
   }), [runRequest])
 
+  const fetchAllProducts = useCallback(() => runRequest(async () => {
+    const data = await fetchWithAuth<Products>("/raw-products/combined")
+    setAllProducts(data);
+    return data
+  }),
+  [runRequest])
+
   const fetchCultivar = useCallback((cultivarId: number) => runRequest(async () => {
     if (!Number.isInteger(cultivarId) || cultivarId <= 0) {
       throw new Error("Identifiant de cultivar invalide.")
@@ -153,12 +197,14 @@ export function VegetablesProvider({ children }: { children: ReactNode }) {
     vegetables,
     cultivars,
     finishedProducts,
+    allProducts,
     selectedCultivar,
     vegetablesLoading,
     vegetablesError,
     fetchVegetables,
     fetchCultivars,
     fetchFinishedProducts,
+    fetchAllProducts,
     fetchCultivar,
     createCultivar,
     clearVegetablesError,
@@ -166,12 +212,14 @@ export function VegetablesProvider({ children }: { children: ReactNode }) {
     vegetables,
     cultivars,
     finishedProducts,
+    allProducts,
     selectedCultivar,
     vegetablesLoading,
     vegetablesError,
     fetchVegetables,
     fetchCultivars,
     fetchFinishedProducts,
+    fetchAllProducts,
     fetchCultivar,
     createCultivar,
     clearVegetablesError,
