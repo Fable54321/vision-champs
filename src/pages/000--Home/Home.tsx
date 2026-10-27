@@ -6,8 +6,7 @@ import {
   Wheat,
   ClipboardCheck,
 } from "lucide-react";
-import { useCropPlans } from '../../Contexts/CropPlanContext';
-import { useEffect } from 'react';
+
 
 const actions = [
   {
@@ -29,15 +28,6 @@ const actions = [
 
 const Home = () => {
 
-const { fetchCropPlans, cropPlans } = useCropPlans();
-
-useEffect(() => {
-  void fetchCropPlans().catch()
-},[fetchCropPlans])
-
-useEffect(() => {
-  console.log(cropPlans);
-},[cropPlans])
 
 
   return (

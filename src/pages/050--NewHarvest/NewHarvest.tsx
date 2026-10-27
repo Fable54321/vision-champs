@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useHarvesting } from "../../Contexts/HarvestingContext";
+
 import { useForeignWorkers } from "../../Contexts/ForeignWorkersContext";
-import { formatNames } from "../../Utils/formatNames";
+import { useHarvesting } from "../../Contexts/HarvestingContext";
 import { useVegetables } from "../../Contexts/vegetablesContext";
+import { HarvestDetailsFields } from "./components/HarvestDetailsFields";
+import { HarvesterField } from "./components/HarvesterField";
+import { LocationAndScheduleFields } from "./components/LocationAndScheduleFields";
+import { TeamLeaderField } from "./components/TeamLeaderField";
+import { getCurrentDate, getCurrentTime } from "./dateTime";
 
 const NewHarvest = () => {
   const {
@@ -17,41 +22,19 @@ const NewHarvest = () => {
     harvesters,
     fetchHarvesters,
   } = useHarvesting();
-
   const { fetchVegetables, vegetables, fetchAllProducts, allProducts } =
     useVegetables();
-
   const { foreignWorkers } = useForeignWorkers();
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [subfield, setSubfield] = useState("");
-  const [harvestingDate, setHarvestingDate] = useState(() => {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  });
-
-  const getCurrentTime = () => {
-    const now = new Date();
-
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-
-    return `${hours}:${minutes}`;
-  };
-
+  const [harvestingDate, setHarvestingDate] = useState(getCurrentDate);
   const [harvestingTime, setHarvestingTime] = useState(getCurrentTime);
-
   const [vegetableId, setVegetableId] = useState<number | string>("");
   const [productId, setProductId] = useState<number | string>("");
   const [amountOfBoxes, setAmountOfBoxes] = useState("");
   const [boxType, setBoxType] = useState("");
   const [harvesterId, setHarvesterId] = useState<number | "">("");
-
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -63,8 +46,29 @@ const NewHarvest = () => {
   }, []);
 
   useEffect(() => {
-    console.log(allProducts);
-  }, [allProducts]);
+    void fetchBoxTypes();
+    void fetchFields();
+    void fetchVegetables();
+    void fetchHarvesters();
+    void fetchAllProducts();
+  }, [
+    fetchAllProducts,
+    fetchBoxTypes,
+    fetchFields,
+    fetchHarvesters,
+    fetchVegetables,
+  ]);
+
+  const teamLeaders = useMemo(
+    () =>
+      foreignWorkers.filter(
+        (worker) =>
+          worker.job_id_1 === 6 ||
+          worker.job_id_2 === 6 ||
+          worker.job_id_3 === 6,
+      ),
+    [foreignWorkers],
+  );
 
   const resetForm = () => {
     setTeamLeaderUserId("");
@@ -120,91 +124,6 @@ const NewHarvest = () => {
     }, 3000);
   };
 
-  const teamLeaders = useMemo(() => {
-    return foreignWorkers.filter((worker) => {
-      return (
-        worker.job_id_1 === 6 || worker.job_id_2 === 6 || worker.job_id_3 === 6
-      );
-    });
-  }, [foreignWorkers]);
-
-  const selectedTeamLeaderName = useMemo(() => {
-    const selectedLeader = teamLeaders.find(
-      (leader) => String(leader.id) === teamLeaderUserId,
-    );
-
-    return selectedLeader
-      ? formatNames(selectedLeader.name, selectedLeader.surname)
-      : "Selecciona un jefe de equipo";
-  }, [teamLeaderUserId, teamLeaders]);
-
-  useEffect(() => {
-    void fetchBoxTypes();
-  }, [fetchBoxTypes]);
-
-  useEffect(() => {
-    void fetchFields();
-  }, [fetchFields]);
-
-  useEffect(() => {
-    void fetchVegetables();
-  }, [fetchVegetables]);
-
-  useEffect(() => {
-    void fetchHarvesters();
-  }, [fetchHarvesters]);
-
-  useEffect(() => {
-    void fetchAllProducts();
-  }, [fetchAllProducts]);
-
-  const filteredVegetables = useMemo(() => {
-    if (!vegetables) return;
-
-    return vegetables.filter(
-      (veg) => !veg.is_generic && veg.vegetable !== "AUCUNE",
-    );
-  }, [vegetables]);
-
-  const sortedBoxTypes = useMemo(() => {
-    if (typeof vegetableId === "string") {
-      return [];
-    }
-    const firstPart = boxTypes.filter(
-      (box) => box.vegetable_id === vegetableId,
-    );
-    const secondPart = boxTypes
-      .filter((box) => box.vegetable_id !== vegetableId)
-      .sort((a, b) => {
-        return a.box_type.localeCompare(b.box_type, undefined, {
-          numeric: true,
-          sensitivity: "base",
-        });
-      });
-
-    return [...firstPart, ...secondPart];
-  }, [vegetableId, boxTypes]);
-
-  const sortedBoxTypesLength = useMemo(() => {
-    return boxTypes.filter((box) => box.vegetable_id === vegetableId).length;
-  }, [vegetableId, boxTypes]);
-
-  const sortedProducts = useMemo(() => {
-    const firstPart = allProducts.filter(
-      (prod) => prod.vegetable_id === vegetableId,
-    );
-    const secondPart = allProducts.filter(
-      (prod) => prod.vegetable_id !== vegetableId,
-    );
-
-    return [...firstPart, ...secondPart];
-  }, [vegetableId, allProducts]);
-
-  const sortedProductsLength = useMemo(() => {
-    return allProducts.filter((prod) => prod.vegetable_id === vegetableId)
-      .length;
-  }, [allProducts, vegetableId]);
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -212,215 +131,41 @@ const NewHarvest = () => {
     >
       <h2 className="text-2xl font-bold">Nueva cosecha</h2>
 
-      <label className="flex flex-col gap-2">
-        <span className="font-semibold">Jefe de equipo</span>
+      <TeamLeaderField
+        teamLeaders={teamLeaders}
+        value={teamLeaderUserId}
+        onChange={setTeamLeaderUserId}
+      />
 
-        <div className="relative">
-          <select
-            value={teamLeaderUserId}
-            onChange={(event) => setTeamLeaderUserId(event.target.value)}
-            required
-            className="w-full appearance-none rounded-xl border border-slate-300 px-3 py-2.5 text-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="" disabled className="text-slate-900">
-              Selecciona un jefe de equipo
-            </option>
-            {teamLeaders.map((leader) => {
-              const fullName = formatNames(leader.name, leader.surname);
+      <LocationAndScheduleFields
+        fields={fields}
+        subfield={subfield}
+        harvestingDate={harvestingDate}
+        harvestingTime={harvestingTime}
+        onSubfieldChange={setSubfield}
+        onHarvestingDateChange={setHarvestingDate}
+        onHarvestingTimeChange={setHarvestingTime}
+      />
 
-              return (
-                <option
-                  className="text-slate-900"
-                  value={leader.id}
-                  key={leader.id}
-                  title={fullName}
-                >
-                  {fullName}
-                </option>
-              );
-            })}
-          </select>
+      <HarvestDetailsFields
+        vegetables={vegetables}
+        boxTypes={boxTypes}
+        products={allProducts}
+        vegetableId={vegetableId}
+        productId={productId}
+        boxType={boxType}
+        amountOfBoxes={amountOfBoxes}
+        onVegetableIdChange={setVegetableId}
+        onProductIdChange={setProductId}
+        onBoxTypeChange={setBoxType}
+        onAmountOfBoxesChange={setAmountOfBoxes}
+      />
 
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-3 right-9 flex items-center overflow-hidden"
-          >
-            <span
-              className={` ${selectedTeamLeaderName.length > 20 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-slate-900`}
-            >
-              {selectedTeamLeaderName}
-            </span>
-          </div>
-
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-600"
-          >
-            ▾
-          </span>
-        </div>
-      </label>
-
-      <label className="flex flex-col gap-2">
-        <span className="font-semibold">Campo y parcela</span>
-
-        <select
-          value={subfield}
-          onChange={(event) => setSubfield(event.target.value)}
-          required
-          className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        >
-          <option>Seleccionar un campo</option>
-          {[...fields]
-            .sort((a, b) =>
-              a.field.localeCompare(b.field, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              }),
-            )
-            .map((field) => {
-              const label = field.field.trim();
-
-              return (
-                <option key={field.id} value={field.field}>
-                  {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
-                </option>
-              );
-            })}
-        </select>
-      </label>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Fecha de cosecha</span>
-
-          <input
-            type="date"
-            value={harvestingDate}
-            onChange={(event) => setHarvestingDate(event.target.value)}
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-        </label>
-
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Hora</span>
-
-          <input
-            type="time"
-            value={harvestingTime}
-            onChange={(event) => setHarvestingTime(event.target.value)}
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-        </label>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Cultivo</span>
-
-          <select
-            value={vegetableId}
-            onChange={(event) => setVegetableId(Number(event.target.value))}
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
-            <option>Seleccionar el cultivo</option>
-            {filteredVegetables?.map((veg) => (
-              <option key={veg.id} value={veg.id}>
-                {veg.vegetable}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Tipos de cajas</span>
-
-          <select
-            value={boxType}
-            onChange={(event) => setBoxType(event.target.value)}
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
-            <option>Seleccionar el tipo de caja</option>
-
-            {sortedBoxTypes.map((type, idx) => {
-              const label = type.box_type.trim();
-
-              return (
-                <option
-                  key={type.id}
-                  value={type.box_type}
-                  className={`${idx < sortedBoxTypesLength ? "font-bold" : ""}`}
-                >
-                  {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
-                </option>
-              );
-            })}
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Producto</span>
-
-          <select
-            value={productId}
-            onChange={(event) => setProductId(event.target.value)}
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
-            <option> Seleccionar un producto</option>
-
-            {sortedProducts.map((product, idx) => (
-              <option
-                key={product.id}
-                value={product.id}
-                className={`${idx < sortedProductsLength ? "font-bold" : ""}`}
-              >
-                {product.product_source === "finished_product"
-                  ? product.full_name
-                  : product.description}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Numero de cajas</span>
-
-          <input
-            type="number"
-            min="1"
-            value={amountOfBoxes}
-            onChange={(event) => setAmountOfBoxes(event.target.value)}
-            required
-            className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-        </label>
-      </div>
-
-      <label className="flex flex-col gap-2">
-        <span className="font-semibold">Cosechadora</span>
-
-        <select
-          value={harvesterId}
-          onChange={(event) => setHarvesterId(Number(event.target.value))}
-          required
-          className="rounded-xl border bg-white border-slate-300 px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        >
-          <option value="" disabled>
-            Seleccionar la cosechadora
-          </option>
-          {harvesters.map((harvester) => (
-            <option value={harvester.id} key={harvester.id}>
-              {`${harvester.harvester_number} - ${harvester.harvester_name}`}
-            </option>
-          ))}
-        </select>
-      </label>
+      <HarvesterField
+        harvesters={harvesters}
+        value={harvesterId}
+        onChange={setHarvesterId}
+      />
 
       {error && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">

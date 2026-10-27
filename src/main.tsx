@@ -10,6 +10,7 @@ import { AuthProvider } from './Contexts/AuthContext.tsx'
 import { HarvestingProvider } from './Contexts/HarvestingContext.tsx'
 import { ForeignWorkersProvider } from './Contexts/ForeignWorkersContext.tsx'
 import { VegetablesProvider } from './Contexts/vegetablesContext.tsx'
+import { CropPlanProvider } from './Contexts/CropPlanContext.tsx'
 
 
 
@@ -32,12 +33,13 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <HarvestingProvider>
-              
+              <CropPlanProvider>
               <VegetablesProvider>
             <ForeignWorkersProvider>
                 <NewHarvest />
             </ForeignWorkersProvider>
             </VegetablesProvider>
+            </CropPlanProvider>
             </HarvestingProvider>
          </ProtectedRoute>
         )
