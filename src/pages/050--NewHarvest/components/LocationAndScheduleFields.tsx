@@ -4,17 +4,17 @@ import type { Field } from "../../../Contexts/HarvestingContext";
 
 type LocationAndScheduleFieldsProps = {
   fields: Field[];
-  subfield: string;
+  fieldId: string | number;
   harvestingDate: string;
   harvestingTime: string;
-  onSubfieldChange: (value: string) => void;
+  onSubfieldChange: (value: string | number) => void;
   onHarvestingDateChange: (value: string) => void;
   onHarvestingTimeChange: (value: string) => void;
 };
 
 export function LocationAndScheduleFields({
   fields,
-  subfield,
+  fieldId,
   harvestingDate,
   harvestingTime,
   onSubfieldChange,
@@ -38,8 +38,8 @@ export function LocationAndScheduleFields({
         <span className="font-semibold">Campo y parcela</span>
 
         <select
-          value={subfield}
-          onChange={(event) => onSubfieldChange(event.target.value)}
+          value={fieldId}
+          onChange={(event) => onSubfieldChange(Number(event.target.value))}
           required
           className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         >
@@ -48,7 +48,7 @@ export function LocationAndScheduleFields({
             const label = field.field.trim();
 
             return (
-              <option key={field.id} value={field.field}>
+              <option key={field.id} value={field.id}>
                 {label.charAt(0).toLocaleUpperCase() + label.slice(1)}
               </option>
             );

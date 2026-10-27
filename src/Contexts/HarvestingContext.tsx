@@ -31,7 +31,7 @@ export interface HarvestingTracking {
 
 export interface CreateHarvestingTrackingInput {
   team_leader_user_id: number;
-  subfield: string;
+  field_id: number;
 
   harvesting_date: string;
   harvesting_time: string;
@@ -64,7 +64,7 @@ export interface Harvester {
 
 export interface UpdateHarvestingTrackingInput {
   team_leader_user_id?: number;
-  subfield?: string;
+  field_id?: string;
 
   harvesting_date?: string;
   harvesting_time?: string;

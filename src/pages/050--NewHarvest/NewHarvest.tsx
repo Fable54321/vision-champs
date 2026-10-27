@@ -8,6 +8,7 @@ import { HarvesterField } from "./components/HarvesterField";
 import { LocationAndScheduleFields } from "./components/LocationAndScheduleFields";
 import { TeamLeaderField } from "./components/TeamLeaderField";
 import { getCurrentDate, getCurrentTime } from "./dateTime";
+import { useCropPlans } from "../../Contexts/CropPlanContext";
 
 const NewHarvest = () => {
   const {
@@ -25,11 +26,12 @@ const NewHarvest = () => {
   const { fetchVegetables, vegetables, fetchAllProducts, allProducts } =
     useVegetables();
   const { foreignWorkers } = useForeignWorkers();
+  const { fetchCropPlans, cropPlans } = useCropPlans();
 
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
-  const [subfield, setSubfield] = useState("");
+  const [fieldId, setFieldId] = useState<number | string>("");
   const [harvestingDate, setHarvestingDate] = useState(getCurrentDate);
-  const [harvestingTime, setHarvestingTime] = useState(getCurrentTime);
+  const [harvestingTime, setHarvestingTime] = useState(("09:41"));
   const [vegetableId, setVegetableId] = useState<number | string>("");
   const [productId, setProductId] = useState<number | string>("");
   const [amountOfBoxes, setAmountOfBoxes] = useState("");
@@ -37,13 +39,13 @@ const NewHarvest = () => {
   const [harvesterId, setHarvesterId] = useState<number | "">("");
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHarvestingTime(getCurrentTime());
-    }, 60_000);
+  // // useEffect(() => {
+  // //   const interval = setInterval(() => {
+  // //     setHarvestingTime(getCurrentTime());
+  // //   }, 60_000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   useEffect(() => {
     void fetchBoxTypes();
@@ -51,13 +53,17 @@ const NewHarvest = () => {
     void fetchVegetables();
     void fetchHarvesters();
     void fetchAllProducts();
+    void fetchCropPlans();
   }, [
     fetchAllProducts,
     fetchBoxTypes,
     fetchFields,
     fetchHarvesters,
     fetchVegetables,
+    fetchCropPlans
   ]);
+
+ 
 
   const teamLeaders = useMemo(
     () =>
@@ -70,9 +76,11 @@ const NewHarvest = () => {
     [foreignWorkers],
   );
 
+
+
   const resetForm = () => {
     setTeamLeaderUserId("");
-    setSubfield("");
+    setFieldId("");
     setHarvestingDate("");
     setHarvestingTime("");
     setVegetableId("");
@@ -102,7 +110,7 @@ const NewHarvest = () => {
 
     const created = await createHarvestingRecord({
       team_leader_user_id: Number(teamLeaderUserId),
-      subfield: subfield.trim(),
+      field_id: fieldId,
       harvesting_date: harvestingDate,
       harvesting_time: harvestingTime,
       vegetable_id: vegetableId,
@@ -124,6 +132,10 @@ const NewHarvest = () => {
     }, 3000);
   };
 
+
+ 
+
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -139,10 +151,10 @@ const NewHarvest = () => {
 
       <LocationAndScheduleFields
         fields={fields}
-        subfield={subfield}
+        fieldId={fieldId}
         harvestingDate={harvestingDate}
         harvestingTime={harvestingTime}
-        onSubfieldChange={setSubfield}
+        onSubfieldChange={setFieldId}
         onHarvestingDateChange={setHarvestingDate}
         onHarvestingTimeChange={setHarvestingTime}
       />
