@@ -59,7 +59,7 @@ export type CropPlanNumber = {
 
 
 
-type CulturePlanContextValue = {
+type CropPlanContextValue = {
   cropPlans: CropPlan[];
   selectedCropPlan: CropPlan | null;
   cropPlansLoading: boolean;
@@ -69,7 +69,7 @@ type CulturePlanContextValue = {
   clearCropPlansError: () => void;
 };
 
-const CulturePlanContext = createContext<CulturePlanContextValue | undefined>(
+const CropPlanContext = createContext<CropPlanContextValue | undefined>(
   undefined,
 );
 
@@ -81,7 +81,7 @@ function cropPlanPath(id: number) {
   return `${CROP_PLANS_PATH}/${encodeURIComponent(String(id))}`;
 }
 
-export function CulturePlanProvider({ children }: { children: ReactNode }) {
+export function CropPlanProvider({ children }: { children: ReactNode }) {
   const [cropPlans, setCropPlans] = useState<CropPlan[]>([]);
   const [selectedCropPlan, setSelectedCropPlan] = useState<CropPlan | null>(
     null,
@@ -163,19 +163,19 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <CulturePlanContext.Provider value={value}>
+    <CropPlanContext.Provider value={value}>
       {children}
-    </CulturePlanContext.Provider>
+    </CropPlanContext.Provider>
   );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useCropPlans() {
-  const context = useContext(CulturePlanContext);
+  const context = useContext(CropPlanContext);
 
   if (!context) {
     throw new Error(
-      "useCulturePlans must be used inside a CulturePlanProvider",
+      "useCropPlans must be used inside a CropPlansProvider",
     );
   }
 

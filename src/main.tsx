@@ -12,6 +12,7 @@ import { ForeignWorkersProvider } from './Contexts/ForeignWorkersContext.tsx'
 import { VegetablesProvider } from './Contexts/vegetablesContext.tsx'
 
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <HarvestingProvider>
+              
               <VegetablesProvider>
             <ForeignWorkersProvider>
                 <NewHarvest />
