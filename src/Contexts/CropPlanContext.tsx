@@ -57,22 +57,15 @@ export type CropPlanNumber = {
   next_crop_plan_number: number;
 }
 
-export type UpdateCropPlanPayload = Partial<CreateCropPlanPayload>;
+
 
 type CulturePlanContextValue = {
   cropPlans: CropPlan[];
   selectedCropPlan: CropPlan | null;
-  nextNumber: CropPlanNumber | null;
   cropPlansLoading: boolean;
   cropPlansError: string | null;
   fetchCropPlans: () => Promise<CropPlan[]>;
   fetchCropPlan: (id: number) => Promise<CropPlan>;
-  fetchNextNumber: () => Promise<CropPlanNumber>;
-  createCropPlan: (payload: CreateCropPlanPayload) => Promise<CropPlan>;
-  updateCropPlan: (
-    id: number,
-    payload: UpdateCropPlanPayload,
-  ) => Promise<CropPlan>;
   deleteCropPlan: (id: number) => Promise<CropPlan>;
   clearCropPlansError: () => void;
 };
@@ -96,7 +89,7 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
   );
   const [cropPlansLoading, setCropPlansLoading] = useState(false);
   const [cropPlansError, setCropPlansError] = useState<string | null>(null);
-  const [nextNumber, setNextNumber] = useState<CropPlanNumber | null>(null);
+ 
 
   const clearCropPlansError = useCallback(() => {
     setCropPlansError(null);
@@ -141,51 +134,11 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
     [runRequest],
   );
 
-  const fetchNextNumber = useCallback(() => 
-    runRequest(async () => {
-      const data = await fetchWithAuth<CropPlanNumber>(`${CROP_PLANS_PATH}/next-number`)
-      setNextNumber(data)
-      
-      
-      return data
-  }, "impossible de récupérer le prochain numéro de plan de culture"),
-[runRequest])
 
-  const createCropPlan = useCallback(
-    (payload: CreateCropPlanPayload) =>
-      runRequest(async () => {
-        const created = await fetchWithAuth<CropPlan>(CROP_PLANS_PATH, {
-          method: "POST",
-          body: payload,
-        });
 
-        setCropPlans((current) => [created, ...current]);
-        setSelectedCropPlan(created);
-        return created;
-      }, "Impossible de créer le plan de culture."),
-    [runRequest],
-  );
 
-  const updateCropPlan = useCallback(
-    (id: number, payload: UpdateCropPlanPayload) =>
-      runRequest(async () => {
-        const updated = await fetchWithAuth<CropPlan>(cropPlanPath(id), {
-          method: "PATCH",
-          body: payload,
-        });
 
-        setCropPlans((current) =>
-          current.map((cropPlan) =>
-            cropPlan.id === updated.id ? updated : cropPlan,
-          ),
-        );
-        setSelectedCropPlan((current) =>
-          current?.id === updated.id ? updated : current,
-        );
-        return updated;
-      }, "Impossible de modifier le plan de culture."),
-    [runRequest],
-  );
+
 
   const deleteCropPlan = useCallback(
     (id: number) =>
@@ -213,10 +166,6 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
       cropPlansError,
       fetchCropPlans,
       fetchCropPlan,
-      fetchNextNumber,
-      nextNumber,
-      createCropPlan,
-      updateCropPlan,
       deleteCropPlan,
       clearCropPlansError,
     }),
@@ -227,10 +176,6 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
       cropPlansError,
       fetchCropPlans,
       fetchCropPlan,
-      fetchNextNumber,
-      nextNumber,
-      createCropPlan,
-      updateCropPlan,
       deleteCropPlan,
       clearCropPlansError,
     ],
