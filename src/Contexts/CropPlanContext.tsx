@@ -66,7 +66,6 @@ type CulturePlanContextValue = {
   cropPlansError: string | null;
   fetchCropPlans: () => Promise<CropPlan[]>;
   fetchCropPlan: (id: number) => Promise<CropPlan>;
-  deleteCropPlan: (id: number) => Promise<CropPlan>;
   clearCropPlansError: () => void;
 };
 
@@ -140,23 +139,7 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
 
 
 
-  const deleteCropPlan = useCallback(
-    (id: number) =>
-      runRequest(async () => {
-        const deleted = await fetchWithAuth<CropPlan>(cropPlanPath(id), {
-          method: "DELETE",
-        });
-
-        setCropPlans((current) =>
-          current.filter((cropPlan) => cropPlan.id !== deleted.id),
-        );
-        setSelectedCropPlan((current) =>
-          current?.id === deleted.id ? null : current,
-        );
-        return deleted;
-      }, "Impossible de supprimer le plan de culture."),
-    [runRequest],
-  );
+ 
 
   const value = useMemo(
     () => ({
@@ -166,7 +149,6 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
       cropPlansError,
       fetchCropPlans,
       fetchCropPlan,
-      deleteCropPlan,
       clearCropPlansError,
     }),
     [
@@ -176,7 +158,6 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
       cropPlansError,
       fetchCropPlans,
       fetchCropPlan,
-      deleteCropPlan,
       clearCropPlansError,
     ],
   );
@@ -189,7 +170,7 @@ export function CulturePlanProvider({ children }: { children: ReactNode }) {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useCulturePlans() {
+export function useCropPlans() {
   const context = useContext(CulturePlanContext);
 
   if (!context) {
