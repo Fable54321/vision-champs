@@ -5,11 +5,13 @@ import type {
   Products,
   Vegetable,
 } from "../../../Contexts/vegetablesContext";
+import type { CropPlan } from "../../../Contexts/CropPlanContext";
 
 type HarvestDetailsFieldsProps = {
   vegetables: Vegetable[];
   boxTypes: BoxType[];
   products: Products;
+  cropPlans: CropPlan[];
   vegetableId: number | string;
   productId: number | string;
   boxType: string;
@@ -24,6 +26,7 @@ export function HarvestDetailsFields({
   vegetables,
   boxTypes,
   products,
+  cropPlans,
   vegetableId,
   productId,
   boxType,
@@ -131,6 +134,16 @@ export function HarvestDetailsFields({
                 </option>
               );
             })}
+          </select>
+        </label>
+
+        <label className="col-span-2 flex flex-col" htmlFor="">
+          <span className="font-semibold" >Plan de cultivo</span>
+<select>
+          {cropPlans.map((plan) => (
+            <option>{plan.crop_plan_number}</option>
+          ))}
+
           </select>
         </label>
 

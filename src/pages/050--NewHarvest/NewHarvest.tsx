@@ -7,7 +7,7 @@ import { HarvestDetailsFields } from "./components/HarvestDetailsFields";
 import { HarvesterField } from "./components/HarvesterField";
 import { LocationAndScheduleFields } from "./components/LocationAndScheduleFields";
 import { TeamLeaderField } from "./components/TeamLeaderField";
-import { getCurrentDate, getCurrentTime } from "./dateTime";
+import { getCurrentDate } from "./dateTime";
 import { useCropPlans } from "../../Contexts/CropPlanContext";
 
 const NewHarvest = () => {
@@ -110,7 +110,7 @@ const NewHarvest = () => {
 
     const created = await createHarvestingRecord({
       team_leader_user_id: Number(teamLeaderUserId),
-      field_id: fieldId,
+      field_id: Number(fieldId),
       harvesting_date: harvestingDate,
       harvesting_time: harvestingTime,
       vegetable_id: vegetableId,
@@ -133,6 +133,10 @@ const NewHarvest = () => {
   };
 
 
+
+  useEffect(() => {
+    console.log(fieldId);
+  },[fieldId])
  
 
 
@@ -171,6 +175,7 @@ const NewHarvest = () => {
         onProductIdChange={setProductId}
         onBoxTypeChange={setBoxType}
         onAmountOfBoxesChange={setAmountOfBoxes}
+        cropPlans={cropPlans}
       />
 
       <HarvesterField
