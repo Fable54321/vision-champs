@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { BoxType } from "../../../Contexts/HarvestingContext";
+import type { BoxType, Field } from "../../../Contexts/HarvestingContext";
 import type {
   Products,
   Vegetable,
@@ -11,6 +11,7 @@ type HarvestDetailsFieldsProps = {
   vegetables: Vegetable[];
   boxTypes: BoxType[];
   products: Products;
+  fields: Field[];
   cropPlans: CropPlan[];
   vegetableId: number | string;
   productId: number | string;
@@ -26,6 +27,7 @@ export function HarvestDetailsFields({
   vegetables,
   boxTypes,
   products,
+  fields,
   cropPlans,
   vegetableId,
   productId,
@@ -139,9 +141,13 @@ export function HarvestDetailsFields({
 
         <label className="col-span-2 flex flex-col" htmlFor="">
           <span className="font-semibold" >Plan de cultivo</span>
-<select>
+<select className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+  <option>Seleccionar el plan de cultivo</option>
           {cropPlans.map((plan) => (
-            <option>{plan.crop_plan_number}</option>
+            <option>{plan.crop_plan_number}--
+             {vegetables.find((veg) => veg.id === plan.culture_id)?.vegetable}--
+             {fields.find((field) => Number(field.id) === Number(plan.field_id))?.field}
+            </option>
           ))}
 
           </select>
