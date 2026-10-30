@@ -169,6 +169,7 @@ const NewHarvest = () => {
         boxTypes={boxTypes}
         products={allProducts}
         fields={fields}
+        fieldId={fieldId}
         vegetableId={vegetableId}
         productId={productId}
         boxType={boxType}

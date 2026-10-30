@@ -21,6 +21,7 @@ type HarvestDetailsFieldsProps = {
   products: Products;
   fields: Field[];
   cropPlans: CropPlan[];
+  fieldId: number | string;
   vegetableId: number | string;
   productId: number | string;
   boxType: string;
@@ -37,6 +38,7 @@ export function HarvestDetailsFields({
   products,
   fields,
   cropPlans,
+  fieldId,
   vegetableId,
   productId,
   boxType,
@@ -97,18 +99,45 @@ export function HarvestDetailsFields({
     [products, vegetableId],
   );
 
-  const genericVegetableId = useMemo(() => {
-    if(!vegetableId || vegetableId === ""){
-      return
-    }
-
-    return vegetables.find((veg) => Number(veg.id)  === Number(vegetableId))?.generic_display_group_id
-  },[vegetableId, vegetables])
 
   useEffect(() => {
-    console.log(genericVegetableId);
-  },[genericVegetableId])
+    console.log(vegetableId)
+  },[vegetableId])
 
+  const filteredCropPlans = useMemo(() => {
+    
+     if(fieldId === "" && vegetableId === ""){
+      return cropPlans
+    }
+  
+   const vegetable = vegetables.find((veg) => Number(veg.id) === Number(vegetableId))
+
+   return cropPlans.filter((plan) => {
+
+if(vegetableId){
+ return   Number(plan.culture_id) === Number(vegetableId) 
+   || Number(plan.culture_id) === Number(vegetable?.generic_display_group_id)}
+ else {
+  return true
+ }  
+  })
+  .filter((plan) => {
+    if(fieldId){
+      return Number(plan.field_id) === Number(fieldId)
+    }
+    else {
+      return true
+    }
+  })
+
+   
+
+  }, [cropPlans, vegetableId, fieldId, vegetables]);
+
+
+  useEffect(() => {
+    console.log(filteredCropPlans);
+  } ,[filteredCropPlans])
 
   return (
     <>
@@ -164,8 +193,8 @@ export function HarvestDetailsFields({
           <span className="font-semibold" >Plan de cultivo</span>
 <select className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
   <option>Seleccionar el plan de cultivo</option>
-          {cropPlans.map((plan) => (
-            <option>{plan.crop_plan_number}--
+          {filteredCropPlans.map((plan) => (
+            <option key={plan.id} value={plan.id}>{plan.crop_plan_number}--
              {formatVegetableName(
                vegetables.find((veg) => veg.id === plan.culture_id)
                  ?.spanish_display_name ?? "",
