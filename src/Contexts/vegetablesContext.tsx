@@ -14,6 +14,8 @@ export type Vegetable = {
   vegetable: string
   is_generic: boolean
   generic_group: string | null
+  generic_display_group_id: number
+  spanish_display_name: string
 }
 
 export type Cultivar = {

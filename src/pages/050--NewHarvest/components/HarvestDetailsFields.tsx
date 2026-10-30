@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import type { BoxType, Field } from "../../../Contexts/HarvestingContext";
 import type {
@@ -6,6 +6,14 @@ import type {
   Vegetable,
 } from "../../../Contexts/vegetablesContext";
 import type { CropPlan } from "../../../Contexts/CropPlanContext";
+
+function formatVegetableName(name: string) {
+  const lowerCaseName = name.trim().toLocaleLowerCase("es");
+
+  return lowerCaseName
+    ? lowerCaseName.charAt(0).toLocaleUpperCase("es") + lowerCaseName.slice(1)
+    : "";
+}
 
 type HarvestDetailsFieldsProps = {
   vegetables: Vegetable[];
@@ -89,6 +97,19 @@ export function HarvestDetailsFields({
     [products, vegetableId],
   );
 
+  const genericVegetableId = useMemo(() => {
+    if(!vegetableId || vegetableId === ""){
+      return
+    }
+
+    return vegetables.find((veg) => Number(veg.id)  === Number(vegetableId))?.generic_display_group_id
+  },[vegetableId, vegetables])
+
+  useEffect(() => {
+    console.log(genericVegetableId);
+  },[genericVegetableId])
+
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -106,7 +127,7 @@ export function HarvestDetailsFields({
             <option>Seleccionar el cultivo</option>
             {filteredVegetables.map((vegetable) => (
               <option key={vegetable.id} value={vegetable.id}>
-                {vegetable.vegetable}
+                {formatVegetableName(vegetable.spanish_display_name)}
               </option>
             ))}
           </select>
@@ -139,13 +160,16 @@ export function HarvestDetailsFields({
           </select>
         </label>
 
-        <label className="col-span-2 flex flex-col" htmlFor="">
+        <label className="sm:col-span-2 flex flex-col" htmlFor="">
           <span className="font-semibold" >Plan de cultivo</span>
 <select className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
   <option>Seleccionar el plan de cultivo</option>
           {cropPlans.map((plan) => (
             <option>{plan.crop_plan_number}--
-             {vegetables.find((veg) => veg.id === plan.culture_id)?.vegetable}--
+             {formatVegetableName(
+               vegetables.find((veg) => veg.id === plan.culture_id)
+                 ?.spanish_display_name ?? "",
+             )}--
              {fields.find((field) => Number(field.id) === Number(plan.field_id))?.field}
             </option>
           ))}

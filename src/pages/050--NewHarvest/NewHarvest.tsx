@@ -63,6 +63,9 @@ const NewHarvest = () => {
     fetchCropPlans
   ]);
 
+
+
+
  
 
   const teamLeaders = useMemo(
@@ -134,9 +137,7 @@ const NewHarvest = () => {
 
 
 
-  useEffect(() => {
-    console.log(fieldId);
-  },[fieldId])
+
  
 
 
