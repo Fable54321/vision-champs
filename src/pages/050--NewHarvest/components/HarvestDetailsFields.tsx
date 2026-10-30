@@ -104,7 +104,7 @@ export function HarvestDetailsFields({
     console.log(vegetableId)
   },[vegetableId])
 
-  const filteredCropPlans = useMemo(() => {
+const filteredCropPlans = useMemo(() => {
     
      if(fieldId === "" && vegetableId === ""){
       return cropPlans
@@ -129,9 +129,6 @@ if(vegetableId){
       return true
     }
   })
-
-   
-
   }, [cropPlans, vegetableId, fieldId, vegetables]);
 
 
