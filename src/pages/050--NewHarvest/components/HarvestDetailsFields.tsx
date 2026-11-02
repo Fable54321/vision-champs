@@ -151,7 +151,9 @@ if(vegetableId){
             className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option>Seleccionar el cultivo</option>
-            {filteredVegetables.map((vegetable) => (
+            {filteredVegetables
+            .sort((a, b) => a.spanish_display_name.localeCompare(b.spanish_display_name, undefined, { numeric: true, sensitivity: "base" }))
+            .map((vegetable) => (
               <option key={vegetable.id} value={vegetable.id}>
                 {formatVegetableName(vegetable.spanish_display_name)}
               </option>
@@ -203,13 +205,13 @@ if(vegetableId){
           </select>
         </label>
 
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 col-span-2">
           <span className="font-semibold">Producto</span>
 
           <select
             value={productId}
             onChange={(event) => onProductIdChange(event.target.value)}
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border  border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option> Seleccionar un producto</option>
 
