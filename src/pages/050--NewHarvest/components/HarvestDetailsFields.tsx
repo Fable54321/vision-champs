@@ -170,7 +170,7 @@ if(vegetableId){
           >
             <option>Seleccionar el tipo de caja</option>
 
-            {boxTypes.map((type, index) => {
+            {sortedBoxTypes.map((type, index) => {
               const label = type.box_type.trim();
 
               return (
