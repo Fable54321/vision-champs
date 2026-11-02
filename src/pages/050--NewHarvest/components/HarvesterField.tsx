@@ -1,4 +1,8 @@
 import type { Harvester } from "../../../Contexts/HarvestingContext";
+import {
+  fieldControlClassName,
+  fieldLabelClassName,
+} from "./formStyles";
 
 type HarvesterFieldProps = {
   harvesters: Harvester[];
@@ -12,14 +16,14 @@ export function HarvesterField({
   onChange,
 }: HarvesterFieldProps) {
   return (
-    <label className="flex flex-col gap-2">
-      <span className="font-semibold">Cosechadora</span>
+    <label className="block">
+      <span className={fieldLabelClassName}>Cosechadora</span>
 
       <select
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
         required
-        className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className={fieldControlClassName}
       >
         <option value="" disabled>
           Seleccionar la cosechadora

@@ -6,8 +6,8 @@ import flower from '../src/assets/flower_no_circle_transparent.png'
 function App() {
   
   return (
-<article className="relative flex flex-col items-center py-6 font-primary h-screen">
-  <img src={vision} alt="" className="w-60" />
+<article className="relative flex min-h-screen flex-col items-center overflow-x-hidden px-3 py-5 font-primary sm:py-6">
+  <img src={vision} alt="Trace Vision" className="w-52 sm:w-60" />
 
   <Outlet />
 

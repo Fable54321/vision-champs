@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 
 import type { Field } from "../../../Contexts/HarvestingContext";
+import {
+  fieldControlClassName,
+  fieldLabelClassName,
+} from "./formStyles";
 
 type LocationAndScheduleFieldsProps = {
   fields: Field[];
@@ -34,16 +38,16 @@ export function LocationAndScheduleFields({
 
   return (
     <>
-      <label className="flex flex-col gap-2">
-        <span className="font-semibold">Campo y parcela</span>
+      <label className="block">
+        <span className={fieldLabelClassName}>Campo y parcela</span>
 
         <select
           value={fieldId}
           onChange={(event) => onSubfieldChange(Number(event.target.value))}
           required
-          className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className={fieldControlClassName}
         >
-          <option>Seleccionar un campo</option>
+          <option value="" disabled>Seleccionar un campo</option>
           {sortedFields.map((field) => {
             const label = field.field.trim();
 
@@ -57,27 +61,27 @@ export function LocationAndScheduleFields({
       </label>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Fecha de cosecha</span>
+        <label className="block">
+          <span className={fieldLabelClassName}>Fecha de cosecha</span>
 
           <input
             type="date"
             value={harvestingDate}
             onChange={(event) => onHarvestingDateChange(event.target.value)}
             required
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className={fieldControlClassName}
           />
         </label>
 
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Hora</span>
+        <label className="block">
+          <span className={fieldLabelClassName}>Hora</span>
 
           <input
             type="time"
             value={harvestingTime}
             onChange={(event) => onHarvestingTimeChange(event.target.value)}
             required
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className={fieldControlClassName}
           />
         </label>
       </div>

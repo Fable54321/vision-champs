@@ -1,14 +1,28 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  LoaderCircle,
+  MapPinned,
+  PackageCheck,
+  Send,
+  Tractor,
+  UsersRound,
+  Wheat,
+} from "lucide-react";
 
+import { useCropPlans } from "../../Contexts/CropPlanContext";
 import { useForeignWorkers } from "../../Contexts/ForeignWorkersContext";
 import { useHarvesting } from "../../Contexts/HarvestingContext";
 import { useVegetables } from "../../Contexts/vegetablesContext";
 import { HarvestDetailsFields } from "./components/HarvestDetailsFields";
+import { HarvestFormSection } from "./components/HarvestFormSection";
 import { HarvesterField } from "./components/HarvesterField";
 import { LocationAndScheduleFields } from "./components/LocationAndScheduleFields";
 import { TeamLeaderField } from "./components/TeamLeaderField";
-import { getCurrentDate } from "./dateTime";
-import { useCropPlans } from "../../Contexts/CropPlanContext";
+import { getCurrentDate, getCurrentTime } from "./dateTime";
 
 const NewHarvest = () => {
   const {
@@ -31,21 +45,13 @@ const NewHarvest = () => {
   const [teamLeaderUserId, setTeamLeaderUserId] = useState("");
   const [fieldId, setFieldId] = useState<number | string>("");
   const [harvestingDate, setHarvestingDate] = useState(getCurrentDate);
-  const [harvestingTime, setHarvestingTime] = useState(("09:41"));
+  const [harvestingTime, setHarvestingTime] = useState(getCurrentTime);
   const [vegetableId, setVegetableId] = useState<number | string>("");
   const [productId, setProductId] = useState<number | string>("");
   const [amountOfBoxes, setAmountOfBoxes] = useState("");
   const [boxType, setBoxType] = useState("");
   const [harvesterId, setHarvesterId] = useState<number | "">("");
   const [success, setSuccess] = useState(false);
-
-  // // useEffect(() => {
-  // //   const interval = setInterval(() => {
-  // //     setHarvestingTime(getCurrentTime());
-  // //   }, 60_000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
 
   useEffect(() => {
     void fetchBoxTypes();
@@ -57,16 +63,11 @@ const NewHarvest = () => {
   }, [
     fetchAllProducts,
     fetchBoxTypes,
+    fetchCropPlans,
     fetchFields,
     fetchHarvesters,
     fetchVegetables,
-    fetchCropPlans
   ]);
-
-
-
-
- 
 
   const teamLeaders = useMemo(
     () =>
@@ -79,13 +80,11 @@ const NewHarvest = () => {
     [foreignWorkers],
   );
 
-
-
   const resetForm = () => {
     setTeamLeaderUserId("");
     setFieldId("");
-    setHarvestingDate("");
-    setHarvestingTime("");
+    setHarvestingDate(getCurrentDate());
+    setHarvestingTime(getCurrentTime());
     setVegetableId("");
     setProductId("");
     setAmountOfBoxes("");
@@ -96,16 +95,14 @@ const NewHarvest = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!vegetableId || typeof vegetableId === "string") {
-      throw new Error("El cultivo es obligatorio");
-    }
-
-    if (!productId || typeof productId === "string") {
-      throw new Error("El producto es obligatorio");
-    }
-
-    if (harvesterId === "") {
-      throw new Error("La cosechadora es obligatoria");
+    if (
+      !vegetableId ||
+      typeof vegetableId === "string" ||
+      !productId ||
+      typeof productId === "string" ||
+      harvesterId === ""
+    ) {
+      return;
     }
 
     clearError();
@@ -123,90 +120,162 @@ const NewHarvest = () => {
       harvester_id: harvesterId,
     });
 
-    if (!created) {
-      return;
-    }
+    if (!created) return;
 
     setSuccess(true);
     resetForm();
 
-    setTimeout(() => {
-      setSuccess(false);
-    }, 3000);
+    window.setTimeout(() => setSuccess(false), 3500);
   };
 
-
-
-
- 
-
-
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="relative z-10 flex w-[min(100%,550px)] flex-col gap-5 rounded-2xl bg-white/50 p-6 shadow-lg"
-    >
-      <h2 className="text-2xl font-bold">Nueva cosecha</h2>
-
-      <TeamLeaderField
-        teamLeaders={teamLeaders}
-        value={teamLeaderUserId}
-        onChange={setTeamLeaderUserId}
-      />
-
-      <LocationAndScheduleFields
-        fields={fields}
-        fieldId={fieldId}
-        harvestingDate={harvestingDate}
-        harvestingTime={harvestingTime}
-        onSubfieldChange={setFieldId}
-        onHarvestingDateChange={setHarvestingDate}
-        onHarvestingTimeChange={setHarvestingTime}
-      />
-
-      <HarvestDetailsFields
-        vegetables={vegetables}
-        boxTypes={boxTypes}
-        products={allProducts}
-        fields={fields}
-        fieldId={fieldId}
-        vegetableId={vegetableId}
-        productId={productId}
-        boxType={boxType}
-        amountOfBoxes={amountOfBoxes}
-        onVegetableIdChange={setVegetableId}
-        onProductIdChange={setProductId}
-        onBoxTypeChange={setBoxType}
-        onAmountOfBoxesChange={setAmountOfBoxes}
-        cropPlans={cropPlans}
-      />
-
-      <HarvesterField
-        harvesters={harvesters}
-        value={harvesterId}
-        onChange={setHarvesterId}
-      />
-
-      {error && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </p>
-      )}
-
-      {success && (
-        <p className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-          La cosecha se registró correctamente
-        </p>
-      )}
-
-      <button
-        type="submit"
-        disabled={creating}
-        className="rounded-xl bg-primary px-5 py-3 font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+    <main className="relative z-10 mt-4 w-[min(98%,600px)] pb-16 sm:mt-6">
+      <Link
+        to="/"
+        className="mb-3 inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-deepgreen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
-        {creating ? "Enregistrement..." : "Enregistrer la récolte"}
-      </button>
-    </form>
+        <ArrowLeft aria-hidden="true" size={18} />
+        Volver al inicio
+      </Link>
+
+      <form
+        onSubmit={handleSubmit}
+        className="overflow-hidden rounded-[1.75rem]  border-white/80 bg-white shadow-[0_24px_70px_rgba(38,63,8,0.14)]"
+      >
+        <header className="relative overflow-hidden bg-linear-to-br from-deepgreen via-secondary to-[#6e9418] px-5 py-7 text-white sm:px-8 sm:py-9">
+          <div className="pointer-events-none absolute -right-12 -top-16 size-44 rounded-full border-28 border-white/5" />
+          <div className="pointer-events-none absolute -bottom-16 right-24 size-32 rounded-full bg-primary/15 blur-2xl" />
+
+          <div className="relative flex items-start gap-4">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 shadow-inner ring-1 ring-white/25 backdrop-blur-sm">
+              <Wheat aria-hidden="true" size={25} strokeWidth={2} />
+            </div>
+
+            <div>
+              <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.18em] text-primary-light">
+                Registro agrícola
+              </p>
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Nueva cosecha
+              </h1>
+              <p className="mt-2 max-w-lg text-sm leading-6 text-white/75 sm:text-[15px]">
+                Completa los datos del equipo, la ubicación y la producción
+                recolectada.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <div className="space-y-4 p-3 sm:space-y-5 sm:p-5">
+          <HarvestFormSection
+            icon={UsersRound}
+            title="Equipo responsable"
+            description="Indica quién dirige esta jornada de cosecha."
+          >
+            <TeamLeaderField
+              teamLeaders={teamLeaders}
+              value={teamLeaderUserId}
+              onChange={setTeamLeaderUserId}
+            />
+          </HarvestFormSection>
+
+          <HarvestFormSection
+            icon={MapPinned}
+            title="Lugar y horario"
+            description="Ubica el trabajo y confirma cuándo se realizó."
+          >
+            <LocationAndScheduleFields
+              fields={fields}
+              fieldId={fieldId}
+              harvestingDate={harvestingDate}
+              harvestingTime={harvestingTime}
+              onSubfieldChange={setFieldId}
+              onHarvestingDateChange={setHarvestingDate}
+              onHarvestingTimeChange={setHarvestingTime}
+            />
+          </HarvestFormSection>
+
+          <HarvestFormSection
+            icon={PackageCheck}
+            title="Detalles de la cosecha"
+            description="Selecciona el cultivo, producto y cantidad recolectada."
+          >
+            <HarvestDetailsFields
+              vegetables={vegetables}
+              boxTypes={boxTypes}
+              products={allProducts}
+              fields={fields}
+              fieldId={fieldId}
+              vegetableId={vegetableId}
+              productId={productId}
+              boxType={boxType}
+              amountOfBoxes={amountOfBoxes}
+              onVegetableIdChange={setVegetableId}
+              onProductIdChange={setProductId}
+              onBoxTypeChange={setBoxType}
+              onAmountOfBoxesChange={setAmountOfBoxes}
+              cropPlans={cropPlans}
+            />
+          </HarvestFormSection>
+
+          <HarvestFormSection
+            icon={Tractor}
+            title="Maquinaria"
+            description="Selecciona la cosechadora utilizada."
+          >
+            <HarvesterField
+              harvesters={harvesters}
+              value={harvesterId}
+              onChange={setHarvesterId}
+            />
+          </HarvestFormSection>
+
+          <div aria-live="polite" className="space-y-3">
+            {error && (
+              <div
+                role="alert"
+                className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-700"
+              >
+                <AlertCircle className="mt-0.5 shrink-0" size={19} />
+                <p className="leading-5">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3.5 text-sm text-emerald-800">
+                <CheckCircle2 className="mt-0.5 shrink-0" size={19} />
+                <p className="leading-5">
+                  La cosecha se registró correctamente.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-2xl bg-deepgreen/[0.045] p-2 sm:p-3">
+            <button
+              type="submit"
+              disabled={creating}
+              className="group flex min-h-14 w-full items-center justify-center gap-2.5 rounded-xl bg-linear-to-r from-secondary to-deepgreen px-5 py-3.5 font-bold text-white shadow-[0_10px_24px_rgba(38,63,8,0.22)] transition duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_14px_30px_rgba(38,63,8,0.28)] active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {creating ? (
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="animate-spin"
+                  size={20}
+                />
+              ) : (
+                <Send
+                  aria-hidden="true"
+                  className="transition-transform group-hover:translate-x-0.5"
+                  size={19}
+                />
+              )}
+              {creating ? "Guardando cosecha..." : "Registrar cosecha"}
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
   );
 };
 

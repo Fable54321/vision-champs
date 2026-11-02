@@ -1,11 +1,15 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
+import type { CropPlan } from "../../../Contexts/CropPlanContext";
 import type { BoxType, Field } from "../../../Contexts/HarvestingContext";
 import type {
   Products,
   Vegetable,
 } from "../../../Contexts/vegetablesContext";
-import type { CropPlan } from "../../../Contexts/CropPlanContext";
+import {
+  fieldControlClassName,
+  fieldLabelClassName,
+} from "./formStyles";
 
 function formatVegetableName(name: string) {
   const lowerCaseName = name.trim().toLocaleLowerCase("es");
@@ -27,7 +31,7 @@ type HarvestDetailsFieldsProps = {
   boxType: string;
   amountOfBoxes: string;
   onVegetableIdChange: (value: number) => void;
-  onProductIdChange: (value: string) => void;
+  onProductIdChange: (value: number) => void;
   onBoxTypeChange: (value: string) => void;
   onAmountOfBoxesChange: (value: string) => void;
 };
@@ -50,17 +54,22 @@ export function HarvestDetailsFields({
 }: HarvestDetailsFieldsProps) {
   const filteredVegetables = useMemo(
     () =>
-      vegetables.filter(
-        (vegetable) =>
-          !vegetable.is_generic && vegetable.vegetable !== "AUCUNE",
-      ),
+      vegetables
+        .filter(
+          (vegetable) =>
+            !vegetable.is_generic && vegetable.vegetable !== "AUCUNE",
+        )
+        .sort((a, b) =>
+          a.spanish_display_name.localeCompare(b.spanish_display_name, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          }),
+        ),
     [vegetables],
   );
 
   const sortedBoxTypes = useMemo(() => {
-    if (typeof vegetableId === "string") {
-      return [];
-    }
+    if (typeof vegetableId === "string") return [];
 
     const matchingBoxTypes = boxTypes.filter(
       (type) => type.vegetable_id === vegetableId,
@@ -99,61 +108,44 @@ export function HarvestDetailsFields({
     [products, vegetableId],
   );
 
+  const filteredCropPlans = useMemo(() => {
+    if (fieldId === "" && vegetableId === "") return cropPlans;
 
-  useEffect(() => {
-    console.log(vegetableId)
-  },[vegetableId])
+    const vegetable = vegetables.find(
+      (item) => Number(item.id) === Number(vegetableId),
+    );
 
-const filteredCropPlans = useMemo(() => {
-    
-     if(fieldId === "" && vegetableId === ""){
-      return cropPlans
-    }
-  
-   const vegetable = vegetables.find((veg) => Number(veg.id) === Number(vegetableId))
+    return cropPlans
+      .filter((plan) => {
+        if (!vegetableId) return true;
 
-   return cropPlans.filter((plan) => {
-
-if(vegetableId){
- return   Number(plan.culture_id) === Number(vegetableId) 
-   || Number(plan.culture_id) === Number(vegetable?.generic_display_group_id)}
- else {
-  return true
- }  
-  })
-  .filter((plan) => {
-    if(fieldId){
-      return Number(plan.field_id) === Number(fieldId)
-    }
-    else {
-      return true
-    }
-  })
-  }, [cropPlans, vegetableId, fieldId, vegetables]);
-
-
-  useEffect(() => {
-    console.log(filteredCropPlans);
-  } ,[filteredCropPlans])
+        return (
+          Number(plan.culture_id) === Number(vegetableId) ||
+          Number(plan.culture_id) === Number(vegetable?.generic_display_group_id)
+        );
+      })
+      .filter((plan) =>
+        fieldId ? Number(plan.field_id) === Number(fieldId) : true,
+      );
+  }, [cropPlans, fieldId, vegetableId, vegetables]);
 
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Cultivo</span>
-
+        <label className="block">
+          <span className={fieldLabelClassName}>Cultivo</span>
           <select
             value={vegetableId}
             onChange={(event) =>
               onVegetableIdChange(Number(event.target.value))
             }
             required
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className={fieldControlClassName}
           >
-            <option>Seleccionar el cultivo</option>
-            {filteredVegetables
-            .sort((a, b) => a.spanish_display_name.localeCompare(b.spanish_display_name, undefined, { numeric: true, sensitivity: "base" }))
-            .map((vegetable) => (
+            <option value="" disabled>
+              Seleccionar el cultivo
+            </option>
+            {filteredVegetables.map((vegetable) => (
               <option key={vegetable.id} value={vegetable.id}>
                 {formatVegetableName(vegetable.spanish_display_name)}
               </option>
@@ -161,17 +153,17 @@ if(vegetableId){
           </select>
         </label>
 
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Tipos de cajas</span>
-
+        <label className="block">
+          <span className={fieldLabelClassName}>Tipo de caja</span>
           <select
             value={boxType}
             onChange={(event) => onBoxTypeChange(event.target.value)}
             required
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className={fieldControlClassName}
           >
-            <option>Seleccionar el tipo de caja</option>
-
+            <option value="" disabled>
+              Seleccionar el tipo de caja
+            </option>
             {sortedBoxTypes.map((type, index) => {
               const label = type.box_type.trim();
 
@@ -188,33 +180,42 @@ if(vegetableId){
           </select>
         </label>
 
-        <label className="sm:col-span-2 flex flex-col" htmlFor="">
-          <span className="font-semibold" >Plan de cultivo</span>
-<select className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
-  <option>Seleccionar el plan de cultivo</option>
-          {filteredCropPlans.map((plan) => (
-            <option key={plan.id} value={plan.id}>{plan.crop_plan_number}--
-             {formatVegetableName(
-               vegetables.find((veg) => veg.id === plan.culture_id)
-                 ?.spanish_display_name ?? "",
-             )}--
-             {fields.find((field) => Number(field.id) === Number(plan.field_id))?.field}
-            </option>
-          ))}
-
+        <label className="block sm:col-span-2">
+          <span className={fieldLabelClassName}>Plan de cultivo</span>
+          <select className={fieldControlClassName} defaultValue="">
+            <option value="">Seleccionar el plan de cultivo</option>
+            {filteredCropPlans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {plan.crop_plan_number} —{" "}
+                {formatVegetableName(
+                  vegetables.find((item) => item.id === plan.culture_id)
+                    ?.spanish_display_name ?? "",
+                )}{" "}
+                —{" "}
+                {fields.find(
+                  (field) => Number(field.id) === Number(plan.field_id),
+                )?.field ?? "Campo sin asignar"}
+              </option>
+            ))}
           </select>
+          <span className="mt-1.5 block text-xs leading-5 text-slate-400">
+            Los planes se filtran según el campo y el cultivo seleccionados.
+          </span>
         </label>
 
-        <label className="flex flex-col gap-2 col-span-2">
-          <span className="font-semibold">Producto</span>
-
+        <label className="block sm:col-span-2">
+          <span className={fieldLabelClassName}>Producto</span>
           <select
             value={productId}
-            onChange={(event) => onProductIdChange(event.target.value)}
-            className="rounded-xl border  border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            onChange={(event) =>
+              onProductIdChange(Number(event.target.value))
+            }
+            required
+            className={fieldControlClassName}
           >
-            <option> Seleccionar un producto</option>
-
+            <option value="" disabled>
+              Seleccionar un producto
+            </option>
             {sortedProducts.map((product, index) => (
               <option
                 key={product.id}
@@ -231,16 +232,17 @@ if(vegetableId){
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Numero de cajas</span>
-
+        <label className="block">
+          <span className={fieldLabelClassName}>Número de cajas</span>
           <input
             type="number"
             min="1"
             value={amountOfBoxes}
             onChange={(event) => onAmountOfBoxesChange(event.target.value)}
+            placeholder="0"
+            inputMode="numeric"
             required
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className={fieldControlClassName}
           />
         </label>
       </div>

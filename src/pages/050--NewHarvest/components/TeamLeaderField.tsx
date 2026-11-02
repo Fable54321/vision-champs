@@ -2,6 +2,10 @@ import { useMemo } from "react";
 
 import type { Worker } from "../../../Contexts/ForeignWorkersContext";
 import { formatNames } from "../../../Utils/formatNames";
+import {
+  fieldControlClassName,
+  fieldLabelClassName,
+} from "./formStyles";
 
 type TeamLeaderFieldProps = {
   teamLeaders: Worker[];
@@ -25,15 +29,15 @@ export function TeamLeaderField({
   }, [teamLeaders, value]);
 
   return (
-    <label className="flex flex-col gap-2">
-      <span className="font-semibold">Jefe de equipo</span>
+    <label className="block">
+      <span className={fieldLabelClassName}>Jefe de equipo</span>
 
       <div className="relative">
         <select
           value={value}
           onChange={(event) => onChange(event.target.value)}
           required
-          className="w-full appearance-none rounded-xl border border-slate-300 px-3 py-2.5 text-transparent outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className={`${fieldControlClassName} appearance-none pr-10 text-transparent`}
         >
           <option value="" disabled className="text-slate-900">
             Selecciona un jefe de equipo
@@ -56,10 +60,10 @@ export function TeamLeaderField({
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-3 right-9 flex items-center overflow-hidden"
+          className="pointer-events-none absolute inset-y-0 left-3.5 right-10 flex items-center overflow-hidden"
         >
           <span
-            className={` ${selectedTeamLeaderName.length > 20 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-slate-900`}
+            className={`${selectedTeamLeaderName.length > 25 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-[15px] ${value ? "text-slate-800" : "text-slate-400"}`}
           >
             {selectedTeamLeaderName}
           </span>
@@ -67,7 +71,7 @@ export function TeamLeaderField({
 
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-600"
+          className="pointer-events-none absolute inset-y-0 right-3.5 flex items-center text-slate-500"
         >
           {"\u25BE"}
         </span>
