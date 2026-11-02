@@ -251,7 +251,7 @@ const NewHarvest = () => {
             )}
           </div>
 
-          <div className="rounded-2xl bg-deepgreen/[0.045] p-2 sm:p-3">
+          <div className="rounded-2xl bg-deepgreen/4.5 p-2 sm:p-3">
             <button
               type="submit"
               disabled={creating}
