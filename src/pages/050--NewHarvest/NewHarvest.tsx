@@ -5,11 +5,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   LoaderCircle,
-  MapPinned,
-  PackageCheck,
   Send,
-  Tractor,
-  UsersRound,
   Wheat,
 } from "lucide-react";
 
@@ -52,6 +48,11 @@ const NewHarvest = () => {
   const [boxType, setBoxType] = useState("");
   const [harvesterId, setHarvesterId] = useState<number | "">("");
   const [success, setSuccess] = useState(false);
+
+  const [fieldCode, setFieldCode] = useState("");
+  const [weekCode, setWeekCode] = useState("");
+  const [dayCode, setDayCode] = useState("");
+  const [productCode, setProductCode] = useState("");
 
   useEffect(() => {
     void fetchBoxTypes();
@@ -151,34 +152,30 @@ const NewHarvest = () => {
               <Wheat aria-hidden="true" size={25} strokeWidth={2} />
             </div>
 
-            
-             
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Nueva cosecha
-              </h1>
-           
-          
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Nueva cosecha
+            </h1>
           </div>
         </header>
 
         <div className="space-y-1 p-3  sm:p-5">
-          <HarvestFormSection
-            icon={UsersRound}
-            title="Equipo responsable"
-            description="Indica quién dirige esta jornada de cosecha."
-          >
+          <HarvestFormSection>
             <TeamLeaderField
               teamLeaders={teamLeaders}
               value={teamLeaderUserId}
               onChange={setTeamLeaderUserId}
+              fieldCode={fieldCode}
+              setFieldCode={setFieldCode}
+              weekCode={weekCode}
+              setWeekCode={setWeekCode}
+              dayCode={dayCode}
+              setDayCode={setDayCode}
+              productCode={productCode}
+              setProductCode={setProductCode}
             />
           </HarvestFormSection>
 
-          <HarvestFormSection
-            icon={MapPinned}
-            title="Lugar y horario"
-            description="Ubica el trabajo y confirma cuándo se realizó."
-          >
+          <HarvestFormSection>
             <LocationAndScheduleFields
               fields={fields}
               fieldId={fieldId}
@@ -190,11 +187,7 @@ const NewHarvest = () => {
             />
           </HarvestFormSection>
 
-          <HarvestFormSection
-            icon={PackageCheck}
-            title="Detalles de la cosecha"
-            description="Selecciona el cultivo, producto y cantidad recolectada."
-          >
+          <HarvestFormSection>
             <HarvestDetailsFields
               vegetables={vegetables}
               boxTypes={boxTypes}
@@ -213,11 +206,7 @@ const NewHarvest = () => {
             />
           </HarvestFormSection>
 
-          <HarvestFormSection
-            icon={Tractor}
-            title="Maquinaria"
-            description="Selecciona la cosechadora utilizada."
-          >
+          <HarvestFormSection>
             <HarvesterField
               harvesters={harvesters}
               value={harvesterId}

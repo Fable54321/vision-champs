@@ -54,6 +54,7 @@ export interface BoxType {
 export interface Field {
   id: string;
   field: string;
+  field_code:string;
 }
 
 export interface Harvester {

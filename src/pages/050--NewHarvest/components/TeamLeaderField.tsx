@@ -1,4 +1,10 @@
-import { useMemo } from "react";
+import {
+  useMemo,
+  useRef,
+  type ChangeEvent,
+  type ClipboardEvent,
+  type KeyboardEvent,
+} from "react";
 
 import type { Worker } from "../../../Contexts/ForeignWorkersContext";
 import { formatNames } from "../../../Utils/formatNames";
@@ -8,13 +14,40 @@ type TeamLeaderFieldProps = {
   teamLeaders: Worker[];
   value: string;
   onChange: (value: string) => void;
+  fieldCode: string;
+  setFieldCode: (value: string) => void;
+  weekCode: string;
+  setWeekCode: (value: string) => void;
+  dayCode: string;
+  setDayCode: (value: string) => void;
+  productCode: string;
+  setProductCode: (value: string) => void;
 };
+
+const lotSegmentLengths = [3, 2, 1, 4];
 
 export function TeamLeaderField({
   teamLeaders,
   value,
   onChange,
+  fieldCode,
+  setFieldCode,
+  weekCode,
+  setWeekCode,
+  dayCode,
+  setDayCode,
+  productCode,
+  setProductCode,
 }: TeamLeaderFieldProps) {
+  const lotInputRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  const valueAndChangers = [
+    { value: fieldCode, changer: setFieldCode },
+    { value: weekCode, changer: setWeekCode },
+    { value: dayCode, changer: setDayCode },
+    { value: productCode, changer: setProductCode },
+  ];
+
   const selectedTeamLeaderName = useMemo(() => {
     const selectedLeader = teamLeaders.find(
       (leader) => String(leader.id) === value,
@@ -25,8 +58,80 @@ export function TeamLeaderField({
       : "Selecciona un jefe de equipo";
   }, [teamLeaders, value]);
 
+  const handleLotSegmentChange = (
+    index: number,
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const input = event.currentTarget;
+    const digits = input.value.replace(/\D/g, "").slice(0, input.maxLength);
+
+    valueAndChangers[index].changer(digits);
+
+    if (digits.length === input.maxLength) {
+      lotInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleLotSegmentPaste = (
+    startIndex: number,
+    event: ClipboardEvent<HTMLInputElement>,
+  ) => {
+    const digits = event.clipboardData.getData("text").replace(/\D/g, "");
+
+    if (!digits) return;
+
+    event.preventDefault();
+
+    let remainingDigits = digits;
+    let focusIndex = startIndex;
+
+    for (
+      let index = startIndex;
+      index < lotSegmentLengths.length && remainingDigits;
+      index += 1
+    ) {
+      const segmentValue = remainingDigits.slice(
+        0,
+        lotSegmentLengths[index],
+      );
+
+      valueAndChangers[index].changer(segmentValue);
+      remainingDigits = remainingDigits.slice(lotSegmentLengths[index]);
+      focusIndex =
+        segmentValue.length === lotSegmentLengths[index]
+          ? Math.min(index + 1, lotSegmentLengths.length - 1)
+          : index;
+    }
+
+    lotInputRefs.current[focusIndex]?.focus();
+  };
+
+  const handleLotSegmentKeyDown = (
+    index: number,
+    event: KeyboardEvent<HTMLInputElement>,
+  ) => {
+    const input = event.currentTarget;
+    const isAtStart = input.selectionStart === 0 && input.selectionEnd === 0;
+
+    if (event.key !== "Backspace" || index === 0 || !isAtStart) return;
+
+    const previousInput = lotInputRefs.current[index - 1];
+    const previousSegment = valueAndChangers[index - 1];
+
+    if (!previousInput) return;
+
+    event.preventDefault();
+    const previousValue = previousSegment.value.slice(0, -1);
+
+    previousSegment.changer(previousValue);
+    previousInput.focus();
+    window.requestAnimationFrame(() => {
+      previousInput.setSelectionRange(previousValue.length, previousValue.length);
+    });
+  };
+
   return (
-    <div>
+    <div className="space-y-2">
       <label className="block">
         <span className={fieldLabelClassName}>Jefe de equipo</span>
 
@@ -76,12 +181,40 @@ export function TeamLeaderField({
         </div>
       </label>
 
-            <label className="block">
-              <span className={fieldLabelClassName}>Numero de lote</span>
-              <input type="text" />
-            </label>
+      <label className="block">
+        <span className={fieldLabelClassName}>Numero de lote</span>
 
-
+        <div className="grid grid-cols-5 items-center gap-x-2">
+          <span
+            className={`${fieldControlClassName} flex items-center justify-center`}
+          >
+            26-
+          </span>
+          {lotSegmentLengths.map((maxLength, index) => (
+            <input
+              key={index}
+              ref={(input) => {
+                lotInputRefs.current[index] = input;
+              }}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={maxLength}
+              value={valueAndChangers[index].value}
+              onChange={(event) => handleLotSegmentChange(index, event)}
+              aria-label={`Segmento ${index + 1} del numero de lote`}
+              onKeyDown={(event) => handleLotSegmentKeyDown(index, event)}
+              onPaste={(event) => handleLotSegmentPaste(index, event)}
+              className={`${fieldControlClassName} text-center text-[1.5rem]! font-bold`}
+            />
+          ))}
+          <p></p>
+          <p className="text-center">CCC</p>
+          <p className="text-center">SS</p>
+          <p className="text-center">D</p>
+          <p className="text-center">PPPP</p>
+        </div>
+      </label>
     </div>
   );
 }
