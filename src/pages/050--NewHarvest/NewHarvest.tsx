@@ -101,6 +101,50 @@ const NewHarvest = () => {
     setFieldId(matchingField?.id ?? "");
   };
 
+  const clearProductSelection = () => {
+    setVegetableId("");
+    setProductId("");
+    setBoxType("");
+  };
+
+  const handleProductCodeChange = (nextProductCode: string) => {
+    setProductCode(nextProductCode);
+
+    if (nextProductCode.length !== 4) {
+      clearProductSelection();
+      return;
+    }
+
+    const matchingProduct = allProducts.find(
+      (product) =>
+        Number(product.product_code) === Number(nextProductCode),
+    );
+
+    if (!matchingProduct) {
+      clearProductSelection();
+      return;
+    }
+
+    const matchingVegetableId = Number(matchingProduct.vegetable_id);
+    const matchingBoxTypes = boxTypes.filter(
+      (type) => Number(type.vegetable_id) === matchingVegetableId,
+    );
+    const quantityFormat = matchingProduct.quantity_format?.trim() ?? "";
+    const boxTypeMatchingFormat = matchingBoxTypes.find(
+      (type) =>
+        quantityFormat !== "" &&
+        type.box_type.trim().localeCompare(quantityFormat, undefined, {
+          sensitivity: "base",
+        }) === 0,
+    );
+
+    setVegetableId(matchingVegetableId);
+    setProductId(Number(matchingProduct.id));
+    setBoxType(
+      boxTypeMatchingFormat?.box_type ?? matchingBoxTypes[0]?.box_type ?? "",
+    );
+  };
+
   const resetForm = () => {
     setTeamLeaderUserId("");
     setFieldId("");
@@ -196,7 +240,7 @@ const NewHarvest = () => {
               dayCode={dayCode}
               setDayCode={setDayCode}
               productCode={productCode}
-              setProductCode={setProductCode}
+              setProductCode={handleProductCodeChange}
             />
           </HarvestFormSection>
 
