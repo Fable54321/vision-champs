@@ -18,7 +18,12 @@ import { HarvestFormSection } from "./components/HarvestFormSection";
 import { HarvesterField } from "./components/HarvesterField";
 import { LocationAndScheduleFields } from "./components/LocationAndScheduleFields";
 import { TeamLeaderField } from "./components/TeamLeaderField";
-import { getCurrentDate, getCurrentTime } from "./dateTime";
+import {
+  getCurrentDate,
+  getCurrentDayCode,
+  getCurrentTime,
+  getCurrentWeekCode,
+} from "./dateTime";
 
 const NewHarvest = () => {
   const {
@@ -50,8 +55,8 @@ const NewHarvest = () => {
   const [success, setSuccess] = useState(false);
 
   const [fieldCode, setFieldCode] = useState("");
-  const [weekCode, setWeekCode] = useState("");
-  const [dayCode, setDayCode] = useState("");
+  const [weekCode, setWeekCode] = useState(getCurrentWeekCode);
+  const [dayCode, setDayCode] = useState(getCurrentDayCode);
   const [productCode, setProductCode] = useState("");
 
   useEffect(() => {
@@ -81,6 +86,21 @@ const NewHarvest = () => {
     [foreignWorkers],
   );
 
+  const handleFieldCodeChange = (nextFieldCode: string) => {
+    setFieldCode(nextFieldCode);
+
+    if (nextFieldCode.length !== 3) {
+      setFieldId("");
+      return;
+    }
+
+    const matchingField = fields.find(
+      (field) => Number(field.field_code) === Number(nextFieldCode),
+    );
+
+    setFieldId(matchingField?.id ?? "");
+  };
+
   const resetForm = () => {
     setTeamLeaderUserId("");
     setFieldId("");
@@ -91,6 +111,10 @@ const NewHarvest = () => {
     setAmountOfBoxes("");
     setBoxType("");
     setHarvesterId("");
+    setFieldCode("");
+    setWeekCode(getCurrentWeekCode());
+    setDayCode(getCurrentDayCode());
+    setProductCode("");
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -129,6 +153,7 @@ const NewHarvest = () => {
     window.setTimeout(() => setSuccess(false), 3500);
   };
 
+
   return (
     <main className="relative z-10 mt-4 w-[min(98%,600px)] pb-16 sm:mt-6">
       <Link
@@ -165,7 +190,7 @@ const NewHarvest = () => {
               value={teamLeaderUserId}
               onChange={setTeamLeaderUserId}
               fieldCode={fieldCode}
-              setFieldCode={setFieldCode}
+              setFieldCode={handleFieldCodeChange}
               weekCode={weekCode}
               setWeekCode={setWeekCode}
               dayCode={dayCode}
