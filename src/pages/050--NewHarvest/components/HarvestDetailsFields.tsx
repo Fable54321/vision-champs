@@ -180,28 +180,7 @@ export function HarvestDetailsFields({
           </select>
         </label>
 
-        <label className="block sm:col-span-2">
-          <span className={fieldLabelClassName}>Plan de cultivo</span>
-          <select className={fieldControlClassName} defaultValue="">
-            <option value="">Seleccionar el plan de cultivo</option>
-            {filteredCropPlans.map((plan) => (
-              <option key={plan.id} value={plan.id}>
-                {plan.crop_plan_number} —{" "}
-                {formatVegetableName(
-                  vegetables.find((item) => item.id === plan.culture_id)
-                    ?.spanish_display_name ?? "",
-                )}{" "}
-                —{" "}
-                {fields.find(
-                  (field) => Number(field.id) === Number(plan.field_id),
-                )?.field ?? "Campo sin asignar"}
-              </option>
-            ))}
-          </select>
-          <span className="mt-1.5 block text-xs leading-5 text-slate-400">
-            Los planes se filtran según el campo y el cultivo seleccionados.
-          </span>
-        </label>
+       
 
         <label className="block sm:col-span-2">
           <span className={fieldLabelClassName}>Producto</span>
@@ -229,6 +208,30 @@ export function HarvestDetailsFields({
             ))}
           </select>
         </label>
+
+ <label className="block sm:col-span-2">
+          <span className={fieldLabelClassName}>Plan de cultivo</span>
+          <select className={fieldControlClassName} defaultValue="">
+            <option value="">Seleccionar el plan de cultivo</option>
+            {filteredCropPlans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {plan.crop_plan_number} —{" "}
+                {formatVegetableName(
+                  vegetables.find((item) => item.id === plan.culture_id)
+                    ?.spanish_display_name ?? "",
+                )}{" "}
+                —{" "}
+                {fields.find(
+                  (field) => Number(field.id) === Number(plan.field_id),
+                )?.field ?? "Campo sin asignar"}
+              </option>
+            ))}
+          </select>
+          <span className="mt-1.5 block text-xs leading-5 text-slate-400">
+            Los planes se filtran según el campo y el cultivo seleccionados.
+          </span>
+        </label>
+
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

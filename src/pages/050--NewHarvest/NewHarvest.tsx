@@ -146,27 +146,22 @@ const NewHarvest = () => {
           <div className="pointer-events-none absolute -right-12 -top-16 size-44 rounded-full border-28 border-white/5" />
           <div className="pointer-events-none absolute -bottom-16 right-24 size-32 rounded-full bg-primary/15 blur-2xl" />
 
-          <div className="relative flex items-start gap-4">
+          <div className="relative flex items-center gap-4">
             <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 shadow-inner ring-1 ring-white/25 backdrop-blur-sm">
               <Wheat aria-hidden="true" size={25} strokeWidth={2} />
             </div>
 
-            <div>
-              <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.18em] text-primary-light">
-                Registro agrícola
-              </p>
+            
+             
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 Nueva cosecha
               </h1>
-              <p className="mt-2 max-w-lg text-sm leading-6 text-white/75 sm:text-[15px]">
-                Completa los datos del equipo, la ubicación y la producción
-                recolectada.
-              </p>
-            </div>
+           
+          
           </div>
         </header>
 
-        <div className="space-y-4 p-3 sm:space-y-5 sm:p-5">
+        <div className="space-y-1 p-3  sm:p-5">
           <HarvestFormSection
             icon={UsersRound}
             title="Equipo responsable"

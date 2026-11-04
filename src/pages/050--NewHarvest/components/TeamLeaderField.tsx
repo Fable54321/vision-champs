@@ -2,10 +2,7 @@ import { useMemo } from "react";
 
 import type { Worker } from "../../../Contexts/ForeignWorkersContext";
 import { formatNames } from "../../../Utils/formatNames";
-import {
-  fieldControlClassName,
-  fieldLabelClassName,
-} from "./formStyles";
+import { fieldControlClassName, fieldLabelClassName } from "./formStyles";
 
 type TeamLeaderFieldProps = {
   teamLeaders: Worker[];
@@ -29,53 +26,62 @@ export function TeamLeaderField({
   }, [teamLeaders, value]);
 
   return (
-    <label className="block">
-      <span className={fieldLabelClassName}>Jefe de equipo</span>
+    <div>
+      <label className="block">
+        <span className={fieldLabelClassName}>Jefe de equipo</span>
 
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          required
-          className={`${fieldControlClassName} appearance-none pr-10 text-transparent`}
-        >
-          <option value="" disabled className="text-slate-900">
-            Selecciona un jefe de equipo
-          </option>
-          {teamLeaders.map((leader) => {
-            const fullName = formatNames(leader.name, leader.surname);
-
-            return (
-              <option
-                className="text-slate-900"
-                value={leader.id}
-                key={leader.id}
-                title={fullName}
-              >
-                {fullName}
-              </option>
-            );
-          })}
-        </select>
-
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-3.5 right-10 flex items-center overflow-hidden"
-        >
-          <span
-            className={`${selectedTeamLeaderName.length > 25 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-[15px] ${value ? "text-slate-800" : "text-slate-400"}`}
+        <div className="relative">
+          <select
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            required
+            className={`${fieldControlClassName} appearance-none pr-10 text-transparent`}
           >
-            {selectedTeamLeaderName}
+            <option value="" disabled className="text-slate-900">
+              Selecciona un jefe de equipo
+            </option>
+            {teamLeaders.map((leader) => {
+              const fullName = formatNames(leader.name, leader.surname);
+
+              return (
+                <option
+                  className="text-slate-900"
+                  value={leader.id}
+                  key={leader.id}
+                  title={fullName}
+                >
+                  {fullName}
+                </option>
+              );
+            })}
+          </select>
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-3.5 right-10 flex items-center overflow-hidden"
+          >
+            <span
+              className={`${selectedTeamLeaderName.length > 25 ? "move-left-right" : ""} shrink-0 whitespace-nowrap text-[15px] ${value ? "text-slate-800" : "text-slate-400"}`}
+            >
+              {selectedTeamLeaderName}
+            </span>
+          </div>
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-3.5 flex items-center text-slate-500"
+          >
+            {"\u25BE"}
           </span>
         </div>
+      </label>
 
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-3.5 flex items-center text-slate-500"
-        >
-          {"\u25BE"}
-        </span>
-      </div>
-    </label>
+            <label className="block">
+              <span className={fieldLabelClassName}>Numero de lote</span>
+              <input type="text" />
+            </label>
+
+
+    </div>
   );
 }
