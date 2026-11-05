@@ -55,8 +55,8 @@ const NewHarvest = () => {
   const [success, setSuccess] = useState(false);
 
   const [fieldCode, setFieldCode] = useState("");
-  const [weekCode, setWeekCode] = useState(getCurrentWeekCode);
-  const [dayCode, setDayCode] = useState(getCurrentDayCode);
+  const [weekCode, setWeekCode] = useState("");
+  const [dayCode, setDayCode] = useState("");
   const [productCode, setProductCode] = useState("");
 
   useEffect(() => {
@@ -199,7 +199,7 @@ const NewHarvest = () => {
 
 
   return (
-    <main className="relative z-10 mt-4 w-[min(98%,600px)] pb-16 sm:mt-6">
+    <main className="relative z-10 mt-4 w-[min(99%,600px)] pb-16 sm:mt-6">
       <Link
         to="/"
         className="mb-3 inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-deepgreen focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
@@ -227,7 +227,7 @@ const NewHarvest = () => {
           </div>
         </header>
 
-        <div className="space-y-1 p-3  sm:p-5">
+        <div className="space-y-1 py-3 px-2  sm:p-5">
           <HarvestFormSection>
             <TeamLeaderField
               teamLeaders={teamLeaders}

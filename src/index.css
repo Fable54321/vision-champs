@@ -307,6 +307,11 @@ button:disabled {
 }
 
 
+input:focus {
+  outline: none;
+  border: none;
+}
+
 @keyframes text-appear {
   from {
     opacity: 0;

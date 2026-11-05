@@ -9,6 +9,7 @@ import {
 import type { Worker } from "../../../Contexts/ForeignWorkersContext";
 import { formatNames } from "../../../Utils/formatNames";
 import { fieldControlClassName, fieldLabelClassName } from "./formStyles";
+import { getCurrentDayCode, getCurrentWeekCode } from "../dateTime";
 
 type TeamLeaderFieldProps = {
   teamLeaders: Worker[];
@@ -42,10 +43,10 @@ export function TeamLeaderField({
   const lotInputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const valueAndChangers = [
-    { value: fieldCode, changer: setFieldCode },
-    { value: weekCode, changer: setWeekCode },
-    { value: dayCode, changer: setDayCode },
-    { value: productCode, changer: setProductCode },
+    { value: fieldCode, changer: setFieldCode, placeHolder: "" },
+    { value: weekCode, changer: setWeekCode, placeHolder: getCurrentWeekCode()},
+    { value: dayCode, changer: setDayCode, placeHolder: getCurrentDayCode()},
+    { value: productCode, changer: setProductCode, placeHolder: "" },
   ];
 
   const selectedTeamLeaderName = useMemo(() => {
@@ -184,12 +185,8 @@ export function TeamLeaderField({
       <label className="block">
         <span className={fieldLabelClassName}>Numero de lote</span>
 
-        <div className="grid grid-cols-5 items-center gap-x-2">
-          <span
-            className={`${fieldControlClassName} flex items-center justify-center`}
-          >
-            26-
-          </span>
+        <div className="grid grid-cols-4 items-center sm:gap-x-2 gap-x-1">
+       
           {lotSegmentLengths.map((maxLength, index) => (
             <input
               key={index}
@@ -200,15 +197,15 @@ export function TeamLeaderField({
               inputMode="numeric"
               pattern="[0-9]*"
               maxLength={maxLength}
+              placeholder={valueAndChangers[index].placeHolder}
               value={valueAndChangers[index].value}
               onChange={(event) => handleLotSegmentChange(index, event)}
               aria-label={`Segmento ${index + 1} del numero de lote`}
               onKeyDown={(event) => handleLotSegmentKeyDown(index, event)}
               onPaste={(event) => handleLotSegmentPaste(index, event)}
-              className={`${fieldControlClassName} text-center text-[1.5rem]! font-bold`}
+              className={`bg-slate-50 rounded-xl shadow-sm py-2 border-slate-200 text-center sm:text-[1.5rem]! text-[1.2rem]! font-bold`}
             />
           ))}
-          <p></p>
           <p className="text-center">CCC</p>
           <p className="text-center">SS</p>
           <p className="text-center">D</p>
