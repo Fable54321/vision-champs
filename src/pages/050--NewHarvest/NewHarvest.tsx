@@ -59,6 +59,18 @@ const NewHarvest = () => {
   const [dayCode, setDayCode] = useState("");
   const [productCode, setProductCode] = useState("");
 
+  const yearNumber = useMemo(() => {
+    return new Date().getFullYear().toString().slice(2,4);
+  },[])
+
+
+ 
+
+const lotNumber = useMemo(() => {
+    return `${yearNumber}${fieldCode}${weekCode}${dayCode}${productCode}`
+
+  },[yearNumber, fieldCode, weekCode, dayCode, productCode]);
+
   useEffect(() => {
     void fetchBoxTypes();
     void fetchFields();
@@ -169,7 +181,8 @@ const NewHarvest = () => {
       typeof vegetableId === "string" ||
       !productId ||
       typeof productId === "string" ||
-      harvesterId === ""
+      harvesterId === "" ||
+      lotNumber.length !== 12
     ) {
       return;
     }
@@ -187,6 +200,7 @@ const NewHarvest = () => {
       amount_of_boxes: Number(amountOfBoxes),
       box_type: boxType.trim(),
       harvester_id: harvesterId,
+      harvest_lot_number: lotNumber,
     });
 
     if (!created) return;

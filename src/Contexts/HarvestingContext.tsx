@@ -36,6 +36,8 @@ export interface CreateHarvestingTrackingInput {
   harvesting_date: string;
   harvesting_time: string;
 
+  harvest_lot_number: string;
+
   vegetable_id: number;
   product_id: number;
 
