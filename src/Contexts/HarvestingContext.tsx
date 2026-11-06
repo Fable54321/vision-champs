@@ -22,7 +22,7 @@ export interface HarvestingTracking {
   product_id: number;
 
   amount_of_boxes: number;
-  box_type: string;
+  box_type_id: number;
 
   harvester: string;
 
@@ -42,7 +42,7 @@ export interface CreateHarvestingTrackingInput {
   product_id: number;
 
   amount_of_boxes: number;
-  box_type: string;
+  box_type_id: number;
 
   harvester_id: number;
 }
@@ -76,7 +76,7 @@ export interface UpdateHarvestingTrackingInput {
   product_id: number;
 
   amount_of_boxes?: number;
-  box_type?: string;
+  box_type_id?: number;
 
   harvester?: string;
 }

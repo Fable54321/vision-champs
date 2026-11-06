@@ -198,7 +198,7 @@ const lotNumber = useMemo(() => {
       vegetable_id: vegetableId,
       product_id: productId,
       amount_of_boxes: Number(amountOfBoxes),
-      box_type: boxType.trim(),
+      box_type_id: Number(boxTypes.find((type) => type.box_type.toLocaleLowerCase().trim() === boxType.toLocaleLowerCase().trim())?.id),
       harvester_id: harvesterId,
       harvest_lot_number: lotNumber,
     });
