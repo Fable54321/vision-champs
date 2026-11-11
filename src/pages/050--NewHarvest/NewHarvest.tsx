@@ -20,9 +20,7 @@ import { LocationAndScheduleFields } from "./components/LocationAndScheduleField
 import { TeamLeaderField } from "./components/TeamLeaderField";
 import {
   getCurrentDate,
-  getCurrentDayCode,
   getCurrentTime,
-  getCurrentWeekCode,
 } from "./dateTime";
 
 const NewHarvest = () => {
@@ -168,8 +166,8 @@ const lotNumber = useMemo(() => {
     setBoxType("");
     setHarvesterId("");
     setFieldCode("");
-    setWeekCode(getCurrentWeekCode());
-    setDayCode(getCurrentDayCode());
+    setWeekCode("");
+    setDayCode("");
     setProductCode("");
   };
 
